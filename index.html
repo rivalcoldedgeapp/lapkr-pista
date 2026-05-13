@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LapKr · Checklist Pista</title>
+<link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkxhcEtyIFBpc3RhIiwKICAic2hvcnRfbmFtZSI6ICJQaXN0YSIsCiAgInN0YXJ0X3VybCI6ICIuLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzBBMEEwQSIsCiAgInRoZW1lX2NvbG9yIjogIiMyRDdGRjkiCn0=">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    background: #0A0A0A;
+    color: #FFFFFF;
+    min-height: 100vh;
+    padding: 12px;
+    line-height: 1.4;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+
+  /* === USER BAR === */
+  .user-bar {
+    background: #111111; border: 1px solid #1E293B; border-radius: 8px;
+    padding: 8px 12px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .user-bar img { width: 28px; height: 28px; border-radius: 50%; }
+  .user-bar .name { flex: 1; font-size: 12px; color: #E5E7EB; font-weight: 500; min-width: 100px; }
+  .user-bar .name .role {
+    display: block; font-size: 9px; font-family: monospace;
+    color: #2D7FF9; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;
+  }
+  .user-bar button {
+    background: transparent; border: 1px solid #1E293B; color: #94A3B8;
+    padding: 5px 10px; border-radius: 5px; font-size: 11px; cursor: pointer;
+    font-family: inherit;
+  }
+  .user-bar button:hover { color: #FFF; border-color: #2D7FF9; }
+  .sync-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10px; color: #94A3B8; font-family: monospace;
+    padding: 4px 8px; background: #0A0A0A; border-radius: 12px;
+  }
+  .sync-pill .dot {
+    width: 7px; height: 7px; border-radius: 50%; background: #10B981;
+  }
+  .sync-pill.syncing .dot { background: #F59E0B; animation: pulse 1s infinite; }
+  .sync-pill.error .dot { background: #EF4444; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* === HEADER === */
+  .header {
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    border: 1px solid #2D7FF9;
+  }
+  .logo-text {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .logo-lap { color: #FFFFFF; }
+  .logo-kr { color: #2D7FF9; }
+  .header-subtitle {
+    color: #94A3B8;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: monospace;
+    margin-bottom: 12px;
+  }
+  .header-title {
+    color: #FFFFFF;
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  /* === TRACK INFO === */
+  .track-info {
+    background: #111111;
+    border: 1px solid #1E293B;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .track-info .ti-field label {
+    font-family: monospace;
+    font-size: 9px;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .track-info .ti-field input {
+    background: transparent;
+    color: #E5E7EB;
+    border: none;
+    font-size: 13px;
+    font-family: inherit;
+    padding: 2px 0;
+    width: 100%;
+  }
+  .track-info .ti-field input:focus {
+    outline: none;
+    color: #2D7FF9;
+  }
+  @media (max-width: 500px) {
+    .track-info { grid-template-columns: 1fr; }
+  }
+
+  /* === STATS BAR === */
+  .stats-bar {
+    background: #111111;
+    border: 1px solid #1E293B;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    text-align: center;
+  }
+  .stat-card {
+    padding: 6px;
+  }
+  .stat-card .num {
+    font-size: 22px;
+    font-weight: 700;
+    color: #FFF;
+    font-feature-settings: "tnum";
+  }
+  .stat-card .num.warn { color: #F59E0B; }
+  .stat-card .num.danger { color: #EF4444; }
+  .stat-card .num.good { color: #10B981; }
+  .stat-card .label {
+    font-family: monospace;
+    font-size: 9px;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+  @media (max-width: 500px) {
+    .stat-card .num { font-size: 18px; }
+  }
+
+  /* === ACTIONS BAR === */
+  .actions-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    background: #1E293B;
+    color: #E5E7EB;
+    border: 1px solid #334155;
+    padding: 9px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover {
+    background: #334155;
+    color: #FFF;
+  }
+  .btn.primary {
+    background: #2D7FF9;
+    color: #FFF;
+    border-color: #2D7FF9;
+  }
+  .btn.primary:hover { background: #1E6BD8; }
+  .btn.danger { color: #EF4444; border-color: rgba(239,68,68,0.3); }
+  .btn.danger:hover { background: rgba(239,68,68,0.1); color: #FCA5A5; }
+  .btn.small { padding: 6px 10px; font-size: 11px; }
+
+  /* === FILTERS === */
+  .filters {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .filter-chip {
+    background: #0A0A0A;
+    color: #94A3B8;
+    border: 1px solid #1E293B;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .filter-chip.active {
+    background: #2D7FF9;
+    color: #FFF;
+    border-color: #2D7FF9;
+  }
+
+  /* === SECTIONS === */
+  .section {
+    background: #111111;
+    border: 1px solid #1E293B;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    background: #0F172A;
+    border-bottom: 1px solid #1E293B;
+  }
+  .section-header:hover { background: #1E293B; }
+  .section.collapsed .section-header { border-bottom: none; }
+  .section-icon {
+    font-size: 22px;
+    margin-right: 12px;
+    line-height: 1;
+  }
+  .section-title {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFF;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .section-progress {
+    font-family: monospace;
+    font-size: 11px;
+    color: #94A3B8;
+    margin-right: 10px;
+  }
+  .section-progress .done { color: #10B981; font-weight: 600; }
+  .section-toggle {
+    font-size: 14px;
+    color: #94A3B8;
+    transition: transform 0.2s;
+  }
+  .section.collapsed .section-toggle { transform: rotate(-90deg); }
+  .section-items {
+    padding: 4px 0;
+  }
+  .section.collapsed .section-items { display: none; }
+  .section-actions {
+    padding: 8px 12px;
+    border-top: 1px solid #1E293B;
+    display: flex;
+    gap: 6px;
+  }
+
+  /* === ITEMS === */
+  .item {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid #0F172A;
+    gap: 10px;
+    transition: background 0.15s;
+  }
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: #0F172A; }
+  .item.checked { opacity: 0.55; }
+  .item.checked .item-name { text-decoration: line-through; }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #334155;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .checkbox.checked {
+    background: #10B981;
+    border-color: #10B981;
+  }
+  .checkbox.checked::after {
+    content: "✓";
+    color: #FFF;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .item-body {
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+  }
+  .item-name {
+    font-size: 14px;
+    color: #E5E7EB;
+    line-height: 1.3;
+  }
+  .item-meta {
+    font-size: 11px;
+    color: #6B7280;
+    margin-top: 3px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .item-meta .badge {
+    background: #0A0A0A;
+    border: 1px solid #1E293B;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 10px;
+  }
+
+  .item-qty {
+    background: #0A0A0A;
+    color: #94A3B8;
+    border: 1px solid #1E293B;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 12px;
+    width: 50px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .item-qty:focus {
+    outline: none;
+    color: #FFF;
+    border-color: #2D7FF9;
+  }
+
+  .item-status {
+    background: #0A0A0A;
+    border: 1px solid #1E293B;
+    color: #94A3B8;
+    padding: 4px 6px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    flex-shrink: 0;
+    min-width: 70px;
+  }
+  .item-status.falta { background: rgba(245,158,11,0.15); color: #F59E0B; border-color: #F59E0B; }
+  .item-status.dañado { background: rgba(239,68,68,0.15); color: #EF4444; border-color: #EF4444; }
+  .item-status.agotado { background: rgba(139,92,246,0.15); color: #8B5CF6; border-color: #8B5CF6; }
+  .item-status.ok { background: rgba(16,185,129,0.1); color: #10B981; border-color: rgba(16,185,129,0.3); }
+
+  .item-menu {
+    background: transparent;
+    border: none;
+    color: #94A3B8;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .item-menu:hover { color: #FFF; }
+
+  /* === MODAL === */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 1000; display: none; align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #141414;
+    border: 1px solid #1E293B;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 100%;
+    padding: 24px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 {
+    color: #FFF;
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    color: #94A3B8;
+    margin-bottom: 5px;
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 9px 12px;
+    background: #0A0A0A;
+    border: 1px solid #1E293B;
+    color: #FFF;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none;
+    border-color: #2D7FF9;
+  }
+  .field textarea { min-height: 60px; resize: vertical; }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+    justify-content: flex-end;
+  }
+
+  /* === LOGIN OVERLAY === */
+  #login-overlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #0A0A0A, #0F172A);
+    z-index: 9999;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  #login-overlay .box {
+    background: #141414; border: 1px solid #2D7FF9; border-radius: 16px;
+    padding: 40px 30px; max-width: 420px; width: 100%; text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  #login-overlay .brand {
+    font-size: 38px; line-height: 1; margin-bottom: 4px; font-weight: 700;
+  }
+  #login-overlay .brand .lap { color: #FFF; }
+  #login-overlay .brand .kr { color: #2D7FF9; }
+  #login-overlay .subtitle {
+    font-family: monospace; font-size: 10px; color: #94A3B8;
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 28px;
+  }
+  #login-overlay p { color: #94A3B8; font-size: 13px; margin-bottom: 22px; line-height: 1.5; }
+  #google-signin-btn {
+    background: #FFF; color: #000; border: none; padding: 12px 24px;
+    border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 10px; width: 100%;
+    justify-content: center; font-family: inherit;
+  }
+  #login-error { color: #EF4444; font-size: 12px; margin-top: 16px; min-height: 18px; }
+  #login-spinner {
+    display: inline-block; width: 32px; height: 32px;
+    border: 3px solid #1E293B; border-top-color: #2D7FF9;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+  }
+  #login-unauthorized {
+    display: none; padding: 20px; background: rgba(239,68,68,0.1);
+    border: 1px solid #EF4444; border-radius: 8px; margin-top: 20px;
+  }
+  #login-unauthorized h3 { color: #EF4444; font-size: 16px; margin-bottom: 8px; }
+  #login-unauthorized p { color: #94A3B8; font-size: 12px; }
+
+  /* === TEAM MODAL === */
+  .team-member-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    background: #0A0A0A; border: 1px solid #1E293B; border-radius: 6px; margin-bottom: 6px;
+  }
+  .team-member-row .email {
+    flex: 1; font-size: 12px; color: #94A3B8;
+    font-family: monospace; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; min-width: 0;
+  }
+  .team-member-row .member-name {
+    font-size: 13px; color: #E5E7EB; font-weight: 500;
+  }
+
+  /* === TOAST === */
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #1E293B; border: 1px solid #2D7FF9;
+    color: #FFF; padding: 10px 20px; border-radius: 8px;
+    font-size: 13px; z-index: 5000;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    animation: toastFade 2.5s forwards;
+  }
+  @keyframes toastFade {
+    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    10%, 80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  }
+
+  /* === REPORT MODAL === */
+  .report-text {
+    background: #0A0A0A;
+    border: 1px solid #1E293B;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #E5E7EB;
+    white-space: pre-wrap;
+    max-height: 400px;
+    overflow-y: auto;
+    line-height: 1.5;
+  }
+
+  /* === EMPTY STATE === */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6B7280;
+    font-size: 13px;
+  }
+  .empty-state .emoji {
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 500px) {
+    .item { padding: 10px 10px; }
+    .item-qty { width: 42px; padding: 4px 6px; }
+    .item-status { min-width: 60px; font-size: 10px; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .actions-bar .btn { flex: 1; min-width: 0; padding: 8px 6px; font-size: 11px; }
+    .logo-text { font-size: 22px; }
+    .header-title { font-size: 14px; }
+    .header { padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+  <div class="box">
+    <div class="brand"><span class="lap">Lap</span><span class="kr">Kr</span></div>
+    <div class="subtitle">CHECKLIST · PISTA</div>
+
+    <div id="login-loading" style="margin-bottom: 24px;">
+      <div id="login-spinner"></div>
+      <div style="margin-top: 12px; font-size: 12px; color: #94A3B8;">Cargando...</div>
+    </div>
+
+    <div id="login-buttons" style="display: none;">
+      <p>Inicia sesión para acceder al checklist de pista del equipo LapKr.</p>
+      <button id="google-signin-btn">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+        Continuar con Google
+      </button>
+      <div id="login-error"></div>
+    </div>
+
+    <div id="login-unauthorized">
+      <div style="font-size: 36px; margin-bottom: 8px;">🚫</div>
+      <h3>Acceso no autorizado</h3>
+      <p id="unauthorized-email"></p>
+      <p style="margin-top: 12px;">Contacta a Ricardo para que te agregue al equipo.</p>
+      <button onclick="window.firebaseSignOut().then(()=>location.reload())" style="margin-top: 16px; background: transparent; color: #94A3B8; border: 1px solid #1E293B; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-family: inherit;">Cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="container" id="app-container" style="display:none;">
+
+  <div class="user-bar">
+    <img id="user-photo" src="" alt="">
+    <div class="name">
+      <span id="user-name">—</span>
+      <span class="role" id="user-role">—</span>
+    </div>
+    <span class="sync-pill" id="sync-pill"><span class="dot"></span><span id="sync-text">Sincronizado</span></span>
+    <button id="team-mgmt-btn" onclick="openTeamModal()" style="display:none;">👥 Equipo</button>
+    <button onclick="logout()">⏏ Salir</button>
+  </div>
+
+  <div class="header">
+    <div class="logo-text"><span class="logo-lap">Lap</span><span class="logo-kr">Kr</span></div>
+    <div class="header-subtitle">Checklist · Pista</div>
+    <div class="header-title">📦 Inventario y carga del F-150</div>
+  </div>
+
+  <div class="track-info">
+    <div class="ti-field">
+      <label>Última pista</label>
+      <input type="text" id="ti-last" placeholder="Ej: KBR 9 may 2026" oninput="onTrackInfoChange()">
+    </div>
+    <div class="ti-field">
+      <label>Próxima pista</label>
+      <input type="text" id="ti-next" placeholder="Ej: KSE 25 may 2026" oninput="onTrackInfoChange()">
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="num good" id="stat-checked">0</div>
+      <div class="label">Cargados</div>
+    </div>
+    <div class="stat-card">
+      <div class="num warn" id="stat-pending">0</div>
+      <div class="label">Pendientes</div>
+    </div>
+    <div class="stat-card">
+      <div class="num danger" id="stat-issues">0</div>
+      <div class="label">Faltan / dañados</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="stat-total">0</div>
+      <div class="label">Total items</div>
+    </div>
+  </div>
+
+  <div class="actions-bar">
+    <button class="btn primary" onclick="openAddItemModal()">+ Item</button>
+    <button class="btn" onclick="openAddSectionModal()">+ Sección</button>
+    <button class="btn" onclick="openReportModal()">📱 Reporte</button>
+    <button class="btn" onclick="openShoppingModal()">🛒 Compras</button>
+    <button class="btn danger" onclick="resetChecklist()">🔄 Reset</button>
+  </div>
+
+  <div class="filters">
+    <button class="filter-chip active" data-filter="all" onclick="setFilter('all')">Todos</button>
+    <button class="filter-chip" data-filter="pending" onclick="setFilter('pending')">Pendientes</button>
+    <button class="filter-chip" data-filter="issues" onclick="setFilter('issues')">Con problema</button>
+    <button class="filter-chip" data-filter="checked" onclick="setFilter('checked')">Cargados</button>
+  </div>
+
+  <div id="sections-container"></div>
+
+</div>
+
+<!-- ADD/EDIT ITEM MODAL -->
+<div class="modal-overlay" id="item-modal" onclick="if(event.target===this)closeItemModal()">
+  <div class="modal">
+    <h2 id="item-modal-title">+ Nuevo item</h2>
+    <div class="field">
+      <label>Nombre</label>
+      <input type="text" id="im-name" placeholder="Ej: Mesa portátil">
+    </div>
+    <div class="field">
+      <label>Sección</label>
+      <select id="im-section"></select>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div class="field">
+        <label>Cantidad</label>
+        <input type="text" id="im-qty" placeholder="Ej: 2">
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <select id="im-status">
+          <option value="ok">✓ ok</option>
+          <option value="falta">⚠️ falta</option>
+          <option value="dañado">🔧 dañado</option>
+          <option value="agotado">🚫 agotado</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Última compra (opcional)</label>
+      <input type="date" id="im-lastpurchase">
+    </div>
+    <div class="field">
+      <label>Notas (opcional)</label>
+      <textarea id="im-notes" placeholder="Ej: comprado en Costco Tlalpan"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn danger" id="im-delete" onclick="deleteCurrentItem()" style="display:none; margin-right:auto;">Eliminar</button>
+      <button class="btn" onclick="closeItemModal()">Cancelar</button>
+      <button class="btn primary" onclick="saveItem()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD SECTION MODAL -->
+<div class="modal-overlay" id="section-modal" onclick="if(event.target===this)closeSectionModal()">
+  <div class="modal">
+    <h2 id="section-modal-title">+ Nueva sección</h2>
+    <div class="field">
+      <label>Nombre</label>
+      <input type="text" id="sm-name" placeholder="Ej: Hospitality">
+    </div>
+    <div class="field">
+      <label>Icono (emoji)</label>
+      <input type="text" id="sm-icon" placeholder="🎪" maxlength="4">
+    </div>
+    <div class="modal-actions">
+      <button class="btn danger" id="sm-delete" onclick="deleteCurrentSection()" style="display:none; margin-right:auto;">Eliminar sección</button>
+      <button class="btn" onclick="closeSectionModal()">Cancelar</button>
+      <button class="btn primary" onclick="saveSection()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT MODAL -->
+<div class="modal-overlay" id="report-modal" onclick="if(event.target===this)closeReportModal()">
+  <div class="modal">
+    <h2>📱 Reporte para WhatsApp</h2>
+    <div class="report-text" id="report-text"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeReportModal()">Cerrar</button>
+      <button class="btn primary" onclick="copyReport()">📋 Copiar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHOPPING LIST MODAL -->
+<div class="modal-overlay" id="shopping-modal" onclick="if(event.target===this)closeShoppingModal()">
+  <div class="modal">
+    <h2>🛒 Lista de compras</h2>
+    <div id="shopping-content"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeShoppingModal()">Cerrar</button>
+      <button class="btn primary" onclick="copyShopping()">📋 Copiar lista</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM MODAL -->
+<div class="modal-overlay" id="team-modal" onclick="if(event.target===this)closeTeamModal()">
+  <div class="modal">
+    <h2>👥 Gestión de Equipo</h2>
+    <div style="background:rgba(45,127,249,0.08); border:1px solid rgba(45,127,249,0.3); border-radius:6px; padding:10px 12px; margin-bottom:18px; font-size:12px; color:#94A3B8; line-height:1.5;">
+      💡 <strong style="color:#2D7FF9">Equipo LapKr Checklist Pista.</strong> Todos los miembros pueden marcar items, agregar items nuevos, y editar cantidades y estados.
+    </div>
+    <div style="background:#0A0A0A; border:1px solid #1E293B; border-radius:8px; padding:14px; margin-bottom:14px;">
+      <div style="font-family:monospace; font-size:10px; text-transform:uppercase; color:#94A3B8; margin-bottom:10px; letter-spacing:1.5px;">Agregar miembro</div>
+      <div class="field">
+        <label>Email Google</label>
+        <input type="email" id="team-new-email" placeholder="francisco@gmail.com">
+      </div>
+      <div class="field">
+        <label>Nombre</label>
+        <input type="text" id="team-new-name" placeholder="Francisco">
+      </div>
+      <button class="btn primary" style="width:100%;" onclick="addTeamMember()">+ Agregar al equipo</button>
+    </div>
+    <div style="margin-bottom:8px; font-family:monospace; font-size:10px; text-transform:uppercase; color:#94A3B8; letter-spacing:1.5px;">Miembros actuales</div>
+    <div id="team-members-list"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeTeamModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAwceX51t0F7W_Ur67f82tPCqdDB2sJq-s",
+    authDomain: "task-e5b55.firebaseapp.com",
+    projectId: "task-e5b55",
+    storageBucket: "task-e5b55.firebasestorage.app",
+    messagingSenderId: "514103833698",
+    appId: "1:514103833698:web:72a3f1c51a7a581e240d3b",
+    measurementId: "G-HFEED951Z5"
+  };
+  window.ADMIN_EMAIL = "ricrodsan37@gmail.com";
+
+  const app = initializeApp(firebaseConfig);
+  window.firebaseAuth = getAuth(app);
+  window.firebaseDb = getFirestore(app);
+  window.firebaseProvider = new GoogleAuthProvider();
+  window.firebaseSignIn = () => signInWithPopup(window.firebaseAuth, window.firebaseProvider);
+  window.firebaseSignOut = () => signOut(window.firebaseAuth);
+  window.firebaseDoc = doc;
+  window.firebaseSetDoc = setDoc;
+  window.firebaseGetDoc = getDoc;
+  window.firebaseOnSnapshot = onSnapshot;
+  window.firebaseOnAuthStateChanged = onAuthStateChanged;
+  window.firebaseReady = true;
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
+
+<script id="seed-data" type="application/json">{"sections":[{"id":"99497648","name":"Mobiliario","icon":"🪑","collapsed":false,"items":[{"id":"bfda8b08","name":"Mesa negra","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"21e25599","name":"Mesa blanca","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"fee73c7a","name":"Base pantalla","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"1c9b8e0a","name":"Sillas","qty":"6","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"fc0e3b8e","name":"Lonas","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"67fcfb27","name":"Lonas con logo","qty":"5","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"88ca9aa5","name":"Banners","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"8595a60a","name":"Carpas","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"18814557","name":"Protector iphone blanco","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"01efa5b3","name":"Bote de basura","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"6c1ab4b1","name":"Paraguas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"1b759238","name":"Hielera","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"d959e61b","name":"Seguridad","icon":"🛡️","collapsed":false,"items":[{"id":"609e5689","name":"Extintores","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"ace0cc0a","name":"Botiquín","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"50f126e7","name":"Estraps","qty":"6","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"785fe577","name":"Pulpo y sinchos","qty":"*+10","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"73589537","name":"Contrapesos","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"1d65dd96","name":"Comunicación","icon":"📡","collapsed":false,"items":[{"id":"5efef686","name":"Radios","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"1aa43054","name":"Starlink","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"319aebd1","name":"iPhone blanco","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"22ec8243","name":"Hub","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"cf81157e","name":"Mychron","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"ead8f0ed","name":"Movilidad","icon":"🚗","collapsed":false,"items":[{"id":"1226e0d7","name":"Patines","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"fa47a140","name":"Eléctrico","icon":"⚡","collapsed":false,"items":[{"id":"6d892cea","name":"Compresora","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"cf83cb48","name":"Power bank","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"290b71ae","name":"Pantalla","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"6a166dcb","name":"Ventilador","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"f7d2400f","name":"Cable pantalla","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b6a41c74","name":"Cable HDMI pantalla","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"0dad44e6","name":"Cargadores patines","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"f5ed7c0c","name":"Cargadores radios","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"4e0d611d","name":"Cargadores laptops","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"bf7caac8","name":"Cargadores celulares","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"c8ae65ad","name":"Baterías osmos 360","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"a586932c","name":"Baterías DJI pocket","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"576f5fa3","name":"Baterías drone","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"143cca56","name":"Batería DJI nano","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b2f96434","name":"Multi contacto","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"fea03c6c","name":"Dispensador de gasolina","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b3d9cab0","name":"Cargador de baterías","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"896ad2d0","name":"Insumos","icon":"🧴","collapsed":false,"items":[{"id":"c8b3ed8c","name":"Papel de baño","qty":"4","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"c4958181","name":"Gel antibacterial","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"558ce7a0","name":"Toallas azules","qty":"4","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"c884a800","name":"Bidones de gasolina","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"7c286b8d","name":"Bidones de agua","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"981c5aa3","name":"Cinchos negros y blancos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b400a003","name":"Cinta gris","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"3f9f666f","name":"Cinta de aislar","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"e62a8fab","name":"Bolsa de basura","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"5023a994","name":"Pilas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"d0c76cfe","name":"Trapos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"0362722b","name":"Carboclean","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"083ebf48","name":"WD-40","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"7e4dcf30","name":"Bebidas/alimento","icon":"🥤","collapsed":false,"items":[{"id":"9408ffc9","name":"Agua","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"37cef67c","name":"Energetizantes","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"eb3b6aca","name":"Refresco","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"e59733f4","name":"Papas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"99a8b947","name":"Chicles","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"9f045671","name":"Chocolates","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"31955865","name":"Hielos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"e17ab0c4","name":"Herramientas","icon":"🔧","collapsed":false,"items":[{"id":"1aaa0e51","name":"Llaves allen","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"fc4a39d2","name":"Desarmadores","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"d28e3480","name":"Atornilladores","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"7d839319","name":"Caja de dados","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"db75c585","name":"Purgador de frenos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"76a5abfe","name":"Reloj carburador","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"3ce242d1","name":"Pop-off carburador","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"eb5a07ad","name":"Laser relación","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"498b543e","name":"Flexometro","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"7030879a","name":"Calibrador vernier","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"8bbe9ce5","name":"Pinzas varias","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"38848758","name":"Escoba","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"19c1a815","name":"Recogedor","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"9c757c6d","name":"Charola","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"82cd912f","name":"Cubetas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"56ef9acb","name":"Refacciones","icon":"🛞","collapsed":false,"items":[{"id":"7a8197fd","name":"Juego de llantas","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"85b1d364","name":"Rines magnesio","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"714ff19c","name":"Rines magnesio/aluminio","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"dad99572","name":"Ejes","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"77da8eb6","name":"Relaciones","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"63bdfdbb","name":"Escape","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"2b8b503d","name":"Piñón","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"8aeb2983","name":"Tornillería rines","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"a4a82ef2","name":"Balatas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"076ea4ca","name":"Cadenas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b2068637","name":"Barilla","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"41d6c7e0","name":"Columna de dirección","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"1eb6922d","name":"Motores (RPG, Refrescado A y Refrescado B)","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"0cbdf0e2","name":"Social media","icon":"📹","collapsed":false,"items":[{"id":"f6906f97","name":"Drone","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"a7329eef","name":"Osmo 360","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"1cc34b9e","name":"DJI Pocket","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"d314c973","name":"DJI Nano","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b4013cae","name":"Micrófonos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"705ba035","name":"Laptop windows","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"0b928da3","name":"Laptop mac","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"8770c781","name":"Adicionales","icon":"➕","collapsed":false,"items":[{"id":"27b0aa33","name":"Muda de ropa","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"236a121b","name":"Toallas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"cbe1d95b","name":"Petaca de karting","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"5f61f08e","name":"Plumas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"16130aac","name":"Cuaderno","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"4d182381","name":"Trapos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"66af9da9","name":"Uniformes","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]}]}
+</script>
+
+<script>
+// ============================================================
+// LAPKR PISTA — App
+// ============================================================
+
+const SEED_DATA = JSON.parse(document.getElementById('seed-data').textContent);
+
+// State
+const state = {
+  sections: [],
+  trackInfo: { last: '', next: '' },
+  filter: 'all',
+  currentItemId: null,
+  currentSectionId: null,
+  team: {}
+};
+
+let firestoreUnsubscribe = null;
+let cloudReady = false;
+let saveTimer = null;
+let suppressSave = false;
+
+window.sessionIdPista = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+
+// ============================================================
+// AUTH FLOW
+// ============================================================
+window.currentUser = null;
+window.currentUserName = null;
+window.currentUserRole = null;
+window.workspaceOwnerId = null;
+
+function showUnauthorized(email) {
+  document.getElementById('login-loading').style.display = 'none';
+  document.getElementById('login-buttons').style.display = 'none';
+  document.getElementById('login-unauthorized').style.display = 'block';
+  document.getElementById('unauthorized-email').textContent = email;
+}
+
+function showApp() {
+  document.getElementById('login-overlay').style.display = 'none';
+  document.getElementById('app-container').style.display = '';
+}
+
+function initAuthFlow() {
+  if (!window.firebaseAuth) return;
+  window.firebaseOnAuthStateChanged(window.firebaseAuth, async (user) => {
+    if (!user) {
+      document.getElementById('login-loading').style.display = 'none';
+      document.getElementById('login-buttons').style.display = 'block';
+      return;
+    }
+    const userEmail = (user.email || '').toLowerCase();
+    const adminEmail = (window.ADMIN_EMAIL || '').toLowerCase();
+    const isAdmin = userEmail === adminEmail;
+
+    if (isAdmin) {
+      window.currentUser = user;
+      window.currentUserRole = 'admin';
+      window.currentUserName = user.displayName || 'Admin';
+      window.workspaceOwnerId = user.uid;
+      finishLogin(user);
+    } else {
+      try {
+        const docRef = window.firebaseDoc(window.firebaseDb, 'lapkr-pista', 'shared');
+        const snap = await window.firebaseGetDoc(docRef);
+        if (!snap.exists()) {
+          showUnauthorized(userEmail + ' — admin no ha iniciado sesión aún');
+          return;
+        }
+        const data = snap.data();
+        window.workspaceOwnerId = data.ownerId;
+        const team = data.team || {};
+        const normalized = {};
+        Object.keys(team).forEach(k => normalized[k.toLowerCase()] = team[k]);
+        if (!normalized[userEmail]) {
+          showUnauthorized(userEmail);
+          return;
+        }
+        window.currentUser = user;
+        window.currentUserRole = 'member';
+        window.currentUserName = normalized[userEmail].name || user.displayName;
+        finishLogin(user);
+      } catch (e) {
+        showUnauthorized(userEmail + ' — error: ' + e.message);
+      }
+    }
+  });
+
+  document.getElementById('google-signin-btn').addEventListener('click', async () => {
+    document.getElementById('login-error').textContent = '';
+    try {
+      await window.firebaseSignIn();
+    } catch (e) {
+      document.getElementById('login-error').textContent = e.message;
+    }
+  });
+}
+
+async function finishLogin(user) {
+  document.getElementById('user-photo').src = user.photoURL || '';
+  document.getElementById('user-name').textContent = window.currentUserName;
+  document.getElementById('user-role').textContent = window.currentUserRole === 'admin' ? 'Admin · LapKr' : 'Equipo · LapKr';
+  if (window.currentUserRole === 'admin') {
+    document.getElementById('team-mgmt-btn').style.display = '';
+  }
+  showApp();
+  setSyncStatus('syncing', 'Cargando...');
+  subscribeToFirestore();
+  await new Promise(resolve => {
+    const wait = () => {
+      if (cloudReady) resolve();
+      else setTimeout(wait, 100);
+    };
+    setTimeout(wait, 200);
+  });
+  // If still no sections after initial load, seed
+  if (state.sections.length === 0) {
+    if (window.currentUserRole === 'admin') {
+      console.log('[Pista] Seeding initial data');
+      suppressSave = true;
+      state.sections = JSON.parse(JSON.stringify(SEED_DATA.sections));
+      suppressSave = false;
+      render();
+      scheduleSave();
+    }
+  } else {
+    render();
+  }
+}
+
+function logout() {
+  if (!confirm('¿Cerrar sesión?')) return;
+  if (firestoreUnsubscribe) firestoreUnsubscribe();
+  window.firebaseSignOut().then(() => location.reload());
+}
+
+// ============================================================
+// FIRESTORE SYNC
+// ============================================================
+function setSyncStatus(status, text) {
+  const pill = document.getElementById('sync-pill');
+  if (!pill) return;
+  pill.className = 'sync-pill ' + (status || '');
+  document.getElementById('sync-text').textContent = text || 'Sincronizado';
+}
+
+function scheduleSave() {
+  if (suppressSave) return;
+  if (!cloudReady) return;
+  if (saveTimer) clearTimeout(saveTimer);
+  setSyncStatus('syncing', 'Guardando...');
+  saveTimer = setTimeout(saveToFirestore, 600);
+}
+
+async function saveToFirestore() {
+  if (!cloudReady || !window.currentUser) return;
+  try {
+    const docRef = window.firebaseDoc(window.firebaseDb, 'lapkr-pista', 'shared');
+    const payload = {
+      sections: state.sections,
+      trackInfo: state.trackInfo,
+      _lastModifiedSession: window.sessionIdPista,
+      _lastModifiedBy: window.currentUser.uid,
+      _lastModifiedByName: window.currentUserName || 'Unknown',
+      _lastModifiedAt: new Date().toISOString(),
+      team: state.team,
+      ownerId: window.workspaceOwnerId
+    };
+    await window.firebaseSetDoc(docRef, payload, { merge: true });
+    setSyncStatus('', 'Sincronizado');
+  } catch (e) {
+    console.error('[Pista] Save failed:', e);
+    setSyncStatus('error', 'Error sync');
+  }
+}
+
+function subscribeToFirestore() {
+  if (!window.firebaseDb) return;
+  const docRef = window.firebaseDoc(window.firebaseDb, 'lapkr-pista', 'shared');
+  if (firestoreUnsubscribe) firestoreUnsubscribe();
+  firestoreUnsubscribe = window.firebaseOnSnapshot(docRef, (snap) => {
+    if (!snap.exists()) {
+      cloudReady = true;
+      setSyncStatus('', 'Listo (sin datos)');
+      return;
+    }
+    const data = snap.data();
+    if (data._lastModifiedSession === window.sessionIdPista) {
+      cloudReady = true;
+      setSyncStatus('', 'Sincronizado');
+      return;
+    }
+    suppressSave = true;
+    if (data.sections) state.sections = data.sections;
+    if (data.trackInfo) state.trackInfo = data.trackInfo;
+    if (data.team) state.team = data.team;
+    suppressSave = false;
+    cloudReady = true;
+    render();
+    setSyncStatus('syncing', 'Actualizando...');
+    setTimeout(() => setSyncStatus('', 'Sincronizado'), 400);
+  }, (err) => {
+    console.error('[Pista] Snapshot error:', err);
+    setSyncStatus('error', 'Error sync');
+  });
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function uid(n = 8) {
+  return Math.random().toString(36).substring(2, 2 + n);
+}
+
+function escapeHTML(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  const dt = new Date(d);
+  if (isNaN(dt)) return d;
+  return dt.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2700);
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render() {
+  renderStats();
+  renderTrackInfo();
+  renderSections();
+}
+
+function renderTrackInfo() {
+  document.getElementById('ti-last').value = state.trackInfo.last || '';
+  document.getElementById('ti-next').value = state.trackInfo.next || '';
+}
+
+function onTrackInfoChange() {
+  state.trackInfo.last = document.getElementById('ti-last').value;
+  state.trackInfo.next = document.getElementById('ti-next').value;
+  scheduleSave();
+}
+
+function renderStats() {
+  let total = 0, checked = 0, issues = 0;
+  state.sections.forEach(s => {
+    s.items.forEach(i => {
+      total++;
+      if (i.checked) checked++;
+      if (!i.checked && (i.status === 'falta' || i.status === 'dañado' || i.status === 'agotado')) issues++;
+    });
+  });
+  const pending = total - checked;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-checked').textContent = checked;
+  document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('stat-issues').textContent = issues;
+}
+
+function renderSections() {
+  const container = document.getElementById('sections-container');
+  if (state.sections.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="emoji">📦</div>No hay secciones. <br><br><button class="btn primary" onclick="openAddSectionModal()">+ Agregar sección</button></div>';
+    return;
+  }
+
+  container.innerHTML = state.sections.map(section => {
+    const filteredItems = section.items.filter(item => {
+      if (state.filter === 'all') return true;
+      if (state.filter === 'pending') return !item.checked;
+      if (state.filter === 'checked') return item.checked;
+      if (state.filter === 'issues') return !item.checked && (item.status === 'falta' || item.status === 'dañado' || item.status === 'agotado');
+      return true;
+    });
+
+    if (state.filter !== 'all' && filteredItems.length === 0) return '';
+
+    const totalItems = section.items.length;
+    const checkedItems = section.items.filter(i => i.checked).length;
+    const progressClass = checkedItems === totalItems && totalItems > 0 ? 'done' : '';
+
+    return `
+      <div class="section ${section.collapsed ? 'collapsed' : ''}" data-section-id="${section.id}">
+        <div class="section-header" onclick="toggleSection('${section.id}')">
+          <div class="section-icon">${escapeHTML(section.icon)}</div>
+          <div class="section-title">${escapeHTML(section.name)}</div>
+          <div class="section-progress"><span class="${progressClass}">${checkedItems}</span>/${totalItems}</div>
+          <button class="item-menu" onclick="event.stopPropagation(); openEditSectionModal('${section.id}')" title="Editar sección">⚙️</button>
+          <span class="section-toggle">▼</span>
+        </div>
+        <div class="section-items">
+          ${filteredItems.length === 0 ? '<div class="empty-state" style="padding: 20px;"><div style="font-size: 12px;">Sin items en este filtro</div></div>' : filteredItems.map(item => `
+            <div class="item ${item.checked ? 'checked' : ''}" data-item-id="${item.id}">
+              <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${section.id}', '${item.id}')"></div>
+              <div class="item-body" onclick="openEditItemModal('${section.id}', '${item.id}')">
+                <div class="item-name">${escapeHTML(item.name)}</div>
+                ${(item.lastPurchase || item.notes) ? `
+                  <div class="item-meta">
+                    ${item.lastPurchase ? `<span class="badge">🛒 ${fmtDate(item.lastPurchase)}</span>` : ''}
+                    ${item.notes ? `<span style="color:#94A3B8; font-style: italic;">"${escapeHTML(item.notes.substring(0, 50))}${item.notes.length > 50 ? '…' : ''}"</span>` : ''}
+                  </div>
+                ` : ''}
+              </div>
+              <input class="item-qty" type="text" value="${escapeHTML(item.qty || '')}" placeholder="—"
+                onclick="event.stopPropagation();"
+                onchange="updateItemField('${section.id}', '${item.id}', 'qty', this.value)">
+              <select class="item-status ${item.status}" onclick="event.stopPropagation();"
+                onchange="updateItemField('${section.id}', '${item.id}', 'status', this.value); this.className = 'item-status ' + this.value;">
+                <option value="ok" ${item.status === 'ok' ? 'selected' : ''}>✓ ok</option>
+                <option value="falta" ${item.status === 'falta' ? 'selected' : ''}>⚠️ falta</option>
+                <option value="dañado" ${item.status === 'dañado' ? 'selected' : ''}>🔧 dañado</option>
+                <option value="agotado" ${item.status === 'agotado' ? 'selected' : ''}>🚫 agotado</option>
+              </select>
+            </div>
+          `).join('')}
+        </div>
+        <div class="section-actions">
+          <button class="btn small" onclick="addItemToSection('${section.id}')">+ Item aquí</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// FILTER & TOGGLE
+// ============================================================
+function setFilter(f) {
+  state.filter = f;
+  document.querySelectorAll('.filter-chip').forEach(el => {
+    el.classList.toggle('active', el.dataset.filter === f);
+  });
+  renderSections();
+}
+
+function toggleSection(sectionId) {
+  const s = state.sections.find(x => x.id === sectionId);
+  if (!s) return;
+  s.collapsed = !s.collapsed;
+  renderSections();
+  scheduleSave();
+}
+
+function toggleItem(sectionId, itemId) {
+  const s = state.sections.find(x => x.id === sectionId);
+  if (!s) return;
+  const item = s.items.find(x => x.id === itemId);
+  if (!item) return;
+  item.checked = !item.checked;
+  render();
+  scheduleSave();
+}
+
+function updateItemField(sectionId, itemId, field, value) {
+  const s = state.sections.find(x => x.id === sectionId);
+  if (!s) return;
+  const item = s.items.find(x => x.id === itemId);
+  if (!item) return;
+  item[field] = value;
+  render();
+  scheduleSave();
+}
+
+// ============================================================
+// ITEM MODAL
+// ============================================================
+function openAddItemModal() {
+  state.currentItemId = null;
+  state.currentSectionId = null;
+  document.getElementById('item-modal-title').textContent = '+ Nuevo item';
+  document.getElementById('im-name').value = '';
+  document.getElementById('im-qty').value = '';
+  document.getElementById('im-status').value = 'ok';
+  document.getElementById('im-lastpurchase').value = '';
+  document.getElementById('im-notes').value = '';
+  populateSectionSelect();
+  document.getElementById('im-delete').style.display = 'none';
+  document.getElementById('item-modal').classList.add('open');
+  setTimeout(() => document.getElementById('im-name').focus(), 50);
+}
+
+function addItemToSection(sectionId) {
+  openAddItemModal();
+  document.getElementById('im-section').value = sectionId;
+}
+
+function openEditItemModal(sectionId, itemId) {
+  const s = state.sections.find(x => x.id === sectionId);
+  if (!s) return;
+  const item = s.items.find(x => x.id === itemId);
+  if (!item) return;
+  state.currentItemId = itemId;
+  state.currentSectionId = sectionId;
+  document.getElementById('item-modal-title').textContent = 'Editar item';
+  document.getElementById('im-name').value = item.name;
+  document.getElementById('im-qty').value = item.qty || '';
+  document.getElementById('im-status').value = item.status || 'ok';
+  document.getElementById('im-lastpurchase').value = item.lastPurchase || '';
+  document.getElementById('im-notes').value = item.notes || '';
+  populateSectionSelect();
+  document.getElementById('im-section').value = sectionId;
+  document.getElementById('im-delete').style.display = '';
+  document.getElementById('item-modal').classList.add('open');
+}
+
+function populateSectionSelect() {
+  const sel = document.getElementById('im-section');
+  sel.innerHTML = state.sections.map(s => `<option value="${s.id}">${escapeHTML(s.icon)} ${escapeHTML(s.name)}</option>`).join('');
+}
+
+function closeItemModal() {
+  document.getElementById('item-modal').classList.remove('open');
+}
+
+function saveItem() {
+  const name = document.getElementById('im-name').value.trim();
+  if (!name) { toast('Falta nombre'); return; }
+  const sectionId = document.getElementById('im-section').value;
+  const targetSection = state.sections.find(s => s.id === sectionId);
+  if (!targetSection) { toast('Sección inválida'); return; }
+
+  const itemData = {
+    name,
+    qty: document.getElementById('im-qty').value.trim(),
+    status: document.getElementById('im-status').value,
+    lastPurchase: document.getElementById('im-lastpurchase').value || null,
+    notes: document.getElementById('im-notes').value.trim()
+  };
+
+  if (state.currentItemId) {
+    // Edit existing
+    const currentSection = state.sections.find(s => s.id === state.currentSectionId);
+    const item = currentSection?.items.find(i => i.id === state.currentItemId);
+    if (item) {
+      Object.assign(item, itemData);
+      // If section changed, move it
+      if (state.currentSectionId !== sectionId) {
+        currentSection.items = currentSection.items.filter(i => i.id !== state.currentItemId);
+        targetSection.items.push(item);
+      }
+    }
+  } else {
+    // New
+    targetSection.items.push({
+      id: uid(),
+      checked: false,
+      ...itemData
+    });
+  }
+
+  render();
+  scheduleSave();
+  closeItemModal();
+  toast('Guardado ✓');
+}
+
+function deleteCurrentItem() {
+  if (!state.currentItemId || !state.currentSectionId) return;
+  if (!confirm('¿Eliminar este item?')) return;
+  const s = state.sections.find(x => x.id === state.currentSectionId);
+  if (!s) return;
+  s.items = s.items.filter(i => i.id !== state.currentItemId);
+  render();
+  scheduleSave();
+  closeItemModal();
+  toast('Item eliminado');
+}
+
+// ============================================================
+// SECTION MODAL
+// ============================================================
+function openAddSectionModal() {
+  state.currentSectionId = null;
+  document.getElementById('section-modal-title').textContent = '+ Nueva sección';
+  document.getElementById('sm-name').value = '';
+  document.getElementById('sm-icon').value = '📦';
+  document.getElementById('sm-delete').style.display = 'none';
+  document.getElementById('section-modal').classList.add('open');
+  setTimeout(() => document.getElementById('sm-name').focus(), 50);
+}
+
+function openEditSectionModal(sectionId) {
+  const s = state.sections.find(x => x.id === sectionId);
+  if (!s) return;
+  state.currentSectionId = sectionId;
+  document.getElementById('section-modal-title').textContent = 'Editar sección';
+  document.getElementById('sm-name').value = s.name;
+  document.getElementById('sm-icon').value = s.icon || '📦';
+  document.getElementById('sm-delete').style.display = '';
+  document.getElementById('section-modal').classList.add('open');
+}
+
+function closeSectionModal() {
+  document.getElementById('section-modal').classList.remove('open');
+}
+
+function saveSection() {
+  const name = document.getElementById('sm-name').value.trim();
+  if (!name) { toast('Falta nombre'); return; }
+  const icon = document.getElementById('sm-icon').value.trim() || '📦';
+
+  if (state.currentSectionId) {
+    const s = state.sections.find(x => x.id === state.currentSectionId);
+    if (s) { s.name = name; s.icon = icon; }
+  } else {
+    state.sections.push({
+      id: uid(),
+      name,
+      icon,
+      collapsed: false,
+      items: []
+    });
+  }
+  render();
+  scheduleSave();
+  closeSectionModal();
+  toast('Sección guardada ✓');
+}
+
+function deleteCurrentSection() {
+  if (!state.currentSectionId) return;
+  const s = state.sections.find(x => x.id === state.currentSectionId);
+  if (!s) return;
+  if (s.items.length > 0) {
+    if (!confirm(`Esta sección tiene ${s.items.length} items. ¿Eliminar TODO?`)) return;
+  } else {
+    if (!confirm('¿Eliminar sección?')) return;
+  }
+  state.sections = state.sections.filter(x => x.id !== state.currentSectionId);
+  render();
+  scheduleSave();
+  closeSectionModal();
+  toast('Sección eliminada');
+}
+
+// ============================================================
+// RESET
+// ============================================================
+function resetChecklist() {
+  if (!confirm('¿Desmarcar TODOS los checkboxes? Las cantidades, estados y notas se mantienen.')) return;
+  state.sections.forEach(s => s.items.forEach(i => { i.checked = false; }));
+  render();
+  scheduleSave();
+  toast('Checklist reseteado ✓');
+}
+
+// ============================================================
+// REPORT
+// ============================================================
+function generateReport() {
+  const now = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+  let report = `🏁 LapKr · Checklist Pista\n📅 ${now}\n`;
+
+  if (state.trackInfo.next) report += `🎯 Próxima: ${state.trackInfo.next}\n`;
+
+  let total = 0, checked = 0;
+  state.sections.forEach(s => s.items.forEach(i => { total++; if (i.checked) checked++; }));
+  report += `\n📦 ${checked}/${total} items cargados\n`;
+
+  const pending = [];
+  const issues = [];
+  state.sections.forEach(s => {
+    s.items.forEach(i => {
+      if (!i.checked) {
+        pending.push(`- ${i.name}${i.qty ? ' (' + i.qty + ')' : ''} [${s.name}]`);
+      }
+      if (i.status === 'falta' || i.status === 'dañado' || i.status === 'agotado') {
+        const label = i.status === 'falta' ? '⚠️' : i.status === 'dañado' ? '🔧' : '🚫';
+        issues.push(`${label} ${i.name} (${i.status})${i.notes ? ' — ' + i.notes : ''}`);
+      }
+    });
+  });
+
+  if (issues.length > 0) {
+    report += `\n⚠️ PROBLEMAS:\n${issues.join('\n')}\n`;
+  }
+  if (pending.length > 0 && pending.length <= 20) {
+    report += `\n📋 PENDIENTES POR CARGAR:\n${pending.join('\n')}\n`;
+  } else if (pending.length > 20) {
+    report += `\n📋 PENDIENTES POR CARGAR: ${pending.length} items (ver app)\n`;
+  }
+
+  return report;
+}
+
+function openReportModal() {
+  document.getElementById('report-text').textContent = generateReport();
+  document.getElementById('report-modal').classList.add('open');
+}
+
+function closeReportModal() {
+  document.getElementById('report-modal').classList.remove('open');
+}
+
+function copyReport() {
+  const text = document.getElementById('report-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    toast('Reporte copiado ✓');
+    closeReportModal();
+  }).catch(() => toast('Error al copiar'));
+}
+
+// ============================================================
+// SHOPPING LIST
+// ============================================================
+function generateShoppingList() {
+  const items = [];
+  state.sections.forEach(s => {
+    s.items.forEach(i => {
+      if (i.status === 'falta' || i.status === 'agotado') {
+        items.push({ ...i, section: s.name, sectionIcon: s.icon });
+      }
+    });
+  });
+  return items;
+}
+
+function openShoppingModal() {
+  const items = generateShoppingList();
+  const container = document.getElementById('shopping-content');
+  if (items.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="emoji">🎉</div>No hay nada pendiente de comprar</div>';
+  } else {
+    const grouped = {};
+    items.forEach(i => {
+      if (!grouped[i.section]) grouped[i.section] = { icon: i.sectionIcon, items: [] };
+      grouped[i.section].items.push(i);
+    });
+    container.innerHTML = `
+      <div style="background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 6px; padding: 10px 12px; margin-bottom: 14px; font-size: 12px; color: #94A3B8;">
+        🛒 <strong style="color:#F59E0B">${items.length} items</strong> con estado "falta" o "agotado"
+      </div>
+      ${Object.keys(grouped).map(sectionName => `
+        <div style="margin-bottom: 16px;">
+          <div style="font-family: monospace; font-size: 11px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">
+            ${escapeHTML(grouped[sectionName].icon)} ${escapeHTML(sectionName)}
+          </div>
+          ${grouped[sectionName].items.map(i => `
+            <div style="background: #0A0A0A; border: 1px solid #1E293B; border-radius: 6px; padding: 10px 12px; margin-bottom: 6px;">
+              <div style="font-size: 13px; color: #E5E7EB; font-weight: 500;">${escapeHTML(i.name)} ${i.qty ? `<span style="color:#94A3B8; font-family:monospace;">×${escapeHTML(i.qty)}</span>` : ''}</div>
+              ${i.notes ? `<div style="font-size: 11px; color: #6B7280; margin-top: 3px;">${escapeHTML(i.notes)}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      `).join('')}
+    `;
+  }
+  document.getElementById('shopping-modal').classList.add('open');
+}
+
+function closeShoppingModal() {
+  document.getElementById('shopping-modal').classList.remove('open');
+}
+
+function copyShopping() {
+  const items = generateShoppingList();
+  if (items.length === 0) { toast('Nada que comprar'); return; }
+  let text = `🛒 Lista de compras LapKr\n📅 ${new Date().toLocaleDateString('es-MX')}\n\n`;
+  const grouped = {};
+  items.forEach(i => {
+    if (!grouped[i.section]) grouped[i.section] = [];
+    grouped[i.section].push(i);
+  });
+  Object.keys(grouped).forEach(sec => {
+    text += `${sec}:\n`;
+    grouped[sec].forEach(i => {
+      text += `- ${i.name}${i.qty ? ' (' + i.qty + ')' : ''}${i.notes ? ' — ' + i.notes : ''}\n`;
+    });
+    text += '\n';
+  });
+  navigator.clipboard.writeText(text).then(() => {
+    toast('Lista copiada ✓');
+    closeShoppingModal();
+  }).catch(() => toast('Error al copiar'));
+}
+
+// ============================================================
+// TEAM MODAL
+// ============================================================
+function openTeamModal() {
+  if (window.currentUserRole !== 'admin') return;
+  document.getElementById('team-new-email').value = '';
+  document.getElementById('team-new-name').value = '';
+  renderTeamList();
+  document.getElementById('team-modal').classList.add('open');
+}
+
+function closeTeamModal() {
+  document.getElementById('team-modal').classList.remove('open');
+}
+
+function renderTeamList() {
+  const container = document.getElementById('team-members-list');
+  if (!container) return;
+  const team = state.team || {};
+  const emails = Object.keys(team);
+  if (emails.length === 0) {
+    container.innerHTML = '<div style="color:#6B7280; font-size:12px; padding:14px; text-align:center; border:1px dashed #1E293B; border-radius:6px;">Aún no has agregado a nadie</div>';
+    return;
+  }
+  container.innerHTML = emails.map(email => `
+    <div class="team-member-row">
+      <div style="flex:1; min-width:0;">
+        <div class="member-name">${escapeHTML(team[email].name)}</div>
+        <div class="email">${escapeHTML(email)}</div>
+      </div>
+      <button class="btn small danger" onclick="removeTeamMember('${escapeHTML(email)}')">Quitar</button>
+    </div>
+  `).join('');
+}
+
+async function addTeamMember() {
+  const email = (document.getElementById('team-new-email').value || '').trim().toLowerCase();
+  const name = (document.getElementById('team-new-name').value || '').trim();
+  if (!email || !email.includes('@')) { toast('Email inválido'); return; }
+  if (!name) { toast('Falta nombre'); return; }
+  if (email === (window.ADMIN_EMAIL || '').toLowerCase()) { toast('Tú ya eres admin'); return; }
+  state.team[email] = { name, addedAt: new Date().toISOString() };
+  await saveToFirestore();
+  document.getElementById('team-new-email').value = '';
+  document.getElementById('team-new-name').value = '';
+  renderTeamList();
+  toast('Miembro agregado ✓');
+}
+
+async function removeTeamMember(email) {
+  if (!confirm(`¿Quitar acceso a ${email}?`)) return;
+  delete state.team[email];
+  await saveToFirestore();
+  renderTeamList();
+  toast('Miembro removido');
+}
+
+// ============================================================
+// START
+// ============================================================
+if (window.firebaseReady) {
+  initAuthFlow();
+} else {
+  window.addEventListener('firebase-ready', initAuthFlow);
+}
+</script>
+
+</body>
+</html>
