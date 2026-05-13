@@ -591,17 +591,26 @@
   <div class="header">
     <div class="logo-text"><span class="logo-lap">Lap</span><span class="logo-kr">Kr</span></div>
     <div class="header-subtitle">Checklist · Pista</div>
-    <div class="header-title">📦 Inventario y carga del F-150</div>
+    <div class="header-title">📦 Inventario</div>
   </div>
 
   <div class="track-info">
     <div class="ti-field">
       <label>Última pista</label>
-      <input type="text" id="ti-last" placeholder="Ej: KBR 9 may 2026" oninput="onTrackInfoChange()">
+      <div style="display:flex; gap:6px; align-items:center;">
+        <select id="ti-last" onchange="onTrackInfoChange()" style="flex:1; background:transparent; color:#E5E7EB; border:none; font-size:13px; font-family:inherit; padding:2px 0; cursor:pointer;">
+          <option value="">— Seleccionar —</option>
+        </select>
+      </div>
     </div>
     <div class="ti-field">
       <label>Próxima pista</label>
-      <input type="text" id="ti-next" placeholder="Ej: KSE 25 may 2026" oninput="onTrackInfoChange()">
+      <div style="display:flex; gap:6px; align-items:center;">
+        <select id="ti-next" onchange="onTrackInfoChange()" style="flex:1; background:transparent; color:#E5E7EB; border:none; font-size:13px; font-family:inherit; padding:2px 0; cursor:pointer;">
+          <option value="">— Seleccionar —</option>
+        </select>
+        <button onclick="openTrackListModal()" title="Gestionar pistas" style="background:transparent; border:1px solid #1E293B; color:#94A3B8; padding:4px 10px; border-radius:5px; font-size:11px; cursor:pointer; font-family:inherit;">+ Pista</button>
+      </div>
     </div>
   </div>
 
@@ -641,6 +650,32 @@
 
   <div id="sections-container"></div>
 
+</div>
+
+<!-- TRACKS LIST MODAL (admin) -->
+<div class="modal-overlay" id="tracks-modal" onclick="if(event.target===this)closeTrackListModal()">
+  <div class="modal">
+    <h2>🏁 Pistas / Kartódromos</h2>
+    <div style="background:rgba(45,127,249,0.08); border:1px solid rgba(45,127,249,0.3); border-radius:6px; padding:10px 12px; margin-bottom:18px; font-size:12px; color:#94A3B8; line-height:1.5;">
+      💡 Gestiona la lista de kartódromos. Estos aparecen en los dropdowns de "última" y "próxima" pista.
+    </div>
+
+    <div style="background:#0A0A0A; border:1px solid #1E293B; border-radius:8px; padding:14px; margin-bottom:14px;">
+      <div style="font-family:monospace; font-size:10px; text-transform:uppercase; color:#94A3B8; margin-bottom:10px; letter-spacing:1.5px;">Agregar pista</div>
+      <div class="field">
+        <label>Nombre del kartódromo</label>
+        <input type="text" id="track-new-name" placeholder="Ej: KSE — Sierra Esmeralda" onkeydown="if(event.key==='Enter')addTrack()">
+      </div>
+      <button class="btn primary" style="width:100%;" onclick="addTrack()">+ Agregar pista</button>
+    </div>
+
+    <div style="margin-bottom:8px; font-family:monospace; font-size:10px; text-transform:uppercase; color:#94A3B8; letter-spacing:1.5px;">Pistas registradas</div>
+    <div id="tracks-list"></div>
+
+    <div class="modal-actions">
+      <button class="btn" onclick="closeTrackListModal()">Cerrar</button>
+    </div>
+  </div>
 </div>
 
 <!-- ADD/EDIT ITEM MODAL -->
@@ -803,6 +838,7 @@ const SEED_DATA = JSON.parse(document.getElementById('seed-data').textContent);
 const state = {
   sections: [],
   trackInfo: { last: '', next: '' },
+  tracks: ['KBR — Bosque Real', 'KSE — Sierra Esmeralda'],
   filter: 'all',
   currentItemId: null,
   currentSectionId: null,
@@ -954,6 +990,7 @@ async function saveToFirestore() {
     const payload = {
       sections: state.sections,
       trackInfo: state.trackInfo,
+      tracks: state.tracks,
       _lastModifiedSession: window.sessionIdPista,
       _lastModifiedBy: window.currentUser.uid,
       _lastModifiedByName: window.currentUserName || 'Unknown',
@@ -988,6 +1025,7 @@ function subscribeToFirestore() {
     suppressSave = true;
     if (data.sections) state.sections = data.sections;
     if (data.trackInfo) state.trackInfo = data.trackInfo;
+    if (data.tracks) state.tracks = data.tracks;
     if (data.team) state.team = data.team;
     suppressSave = false;
     cloudReady = true;
@@ -1037,8 +1075,31 @@ function render() {
 }
 
 function renderTrackInfo() {
-  document.getElementById('ti-last').value = state.trackInfo.last || '';
-  document.getElementById('ti-next').value = state.trackInfo.next || '';
+  // Populate both dropdowns with the current tracks list
+  const lastSel = document.getElementById('ti-last');
+  const nextSel = document.getElementById('ti-next');
+  if (!lastSel || !nextSel) return;
+
+  const optionsHTML = '<option value="">— Seleccionar —</option>' +
+    (state.tracks || []).map(t => `<option value="${escapeHTML(t)}">${escapeHTML(t)}</option>`).join('');
+
+  // Preserve current selection
+  const lastVal = state.trackInfo.last || '';
+  const nextVal = state.trackInfo.next || '';
+
+  lastSel.innerHTML = optionsHTML;
+  nextSel.innerHTML = optionsHTML;
+
+  // If the stored value isn't in the list anymore (got removed), add it as a one-off option
+  if (lastVal && !(state.tracks || []).includes(lastVal)) {
+    lastSel.innerHTML += `<option value="${escapeHTML(lastVal)}">${escapeHTML(lastVal)} (no listada)</option>`;
+  }
+  if (nextVal && !(state.tracks || []).includes(nextVal)) {
+    nextSel.innerHTML += `<option value="${escapeHTML(nextVal)}">${escapeHTML(nextVal)} (no listada)</option>`;
+  }
+
+  lastSel.value = lastVal;
+  nextSel.value = nextVal;
 }
 
 function onTrackInfoChange() {
@@ -1535,6 +1596,63 @@ async function removeTeamMember(email) {
   await saveToFirestore();
   renderTeamList();
   toast('Miembro removido');
+}
+
+// ============================================================
+// TRACKS MANAGEMENT
+// ============================================================
+function openTrackListModal() {
+  document.getElementById('track-new-name').value = '';
+  renderTracksList();
+  document.getElementById('tracks-modal').classList.add('open');
+  setTimeout(() => document.getElementById('track-new-name').focus(), 50);
+}
+
+function closeTrackListModal() {
+  document.getElementById('tracks-modal').classList.remove('open');
+}
+
+function renderTracksList() {
+  const container = document.getElementById('tracks-list');
+  if (!container) return;
+  const tracks = state.tracks || [];
+  if (tracks.length === 0) {
+    container.innerHTML = '<div style="color:#6B7280; font-size:12px; padding:14px; text-align:center; border:1px dashed #1E293B; border-radius:6px;">Aún no hay pistas registradas</div>';
+    return;
+  }
+  container.innerHTML = tracks.map((track, idx) => `
+    <div class="team-member-row">
+      <div style="flex:1; min-width:0;">
+        <div class="member-name">🏁 ${escapeHTML(track)}</div>
+      </div>
+      <button class="btn small danger" onclick="removeTrack(${idx})">Quitar</button>
+    </div>
+  `).join('');
+}
+
+function addTrack() {
+  const input = document.getElementById('track-new-name');
+  const name = (input.value || '').trim();
+  if (!name) { toast('Falta nombre'); return; }
+  state.tracks = state.tracks || [];
+  if (state.tracks.includes(name)) { toast('Esa pista ya existe'); return; }
+  state.tracks.push(name);
+  input.value = '';
+  renderTracksList();
+  renderTrackInfo();
+  scheduleSave();
+  toast('Pista agregada ✓');
+  setTimeout(() => input.focus(), 50);
+}
+
+function removeTrack(idx) {
+  const track = state.tracks[idx];
+  if (!confirm(`¿Quitar "${track}" de la lista?`)) return;
+  state.tracks.splice(idx, 1);
+  renderTracksList();
+  renderTrackInfo();
+  scheduleSave();
+  toast('Pista removida');
 }
 
 // ============================================================
