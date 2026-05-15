@@ -635,10 +635,23 @@
 
   <div class="actions-bar">
     <button class="btn primary" onclick="openAddItemModal()">+ Item</button>
-    <button class="btn" onclick="openAddSectionModal()">+ Sección</button>
+    <button class="btn" id="btn-add-section" onclick="openAddSectionModal()">+ Sección</button>
     <button class="btn" onclick="openReportModal()">📱 Reporte</button>
     <button class="btn" onclick="openShoppingModal()">🛒 Compras</button>
-    <button class="btn danger" onclick="resetChecklist()">🔄 Reset</button>
+    <button class="btn" id="btn-pending-changes" onclick="openPendingChangesModal()" style="display:none;">📋 Pendientes <span id="pending-count-badge" style="background:#F59E0B; color:#000; font-size:10px; padding:1px 6px; border-radius:8px; font-weight:700; margin-left:4px;">0</span></button>
+    <button class="btn" onclick="openChangeLogModal()" title="Bitácora de cambios">📓</button>
+    <button class="btn danger" id="btn-reset" onclick="resetChecklist()" style="display:none;">🔄 Reset</button>
+  </div>
+
+  <div id="pending-banner" style="display:none; background:linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(245,158,11,0.05) 100%); border:1px solid #F59E0B; border-radius:8px; padding:14px 16px; margin-bottom:14px; cursor:pointer;" onclick="openPendingChangesModal()">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="font-size:22px;">📋</div>
+      <div style="flex:1;">
+        <div style="font-weight:600; color:#F59E0B; font-size:13px;" id="pending-banner-title">Cambios pendientes de aprobación</div>
+        <div style="color:#94A3B8; font-size:11px; margin-top:2px;" id="pending-banner-subtitle">Toca para revisar</div>
+      </div>
+      <div style="color:#F59E0B; font-size:14px;">→</div>
+    </div>
   </div>
 
   <div class="filters">
@@ -650,6 +663,34 @@
 
   <div id="sections-container"></div>
 
+</div>
+
+<!-- PENDING CHANGES MODAL -->
+<div class="modal-overlay" id="pending-changes-modal" onclick="if(event.target===this)closePendingChangesModal()">
+  <div class="modal" style="max-width:680px;">
+    <h2>📋 Cambios pendientes</h2>
+    <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:10px 12px; margin-bottom:14px; font-size:12px; color:#94A3B8; line-height:1.5;">
+      💡 Los workers proponen cambios al inventario (agregar / editar / eliminar items) y el admin los aprueba o rechaza aquí.
+    </div>
+    <div id="pending-changes-list" style="max-height:60vh; overflow-y:auto; padding-right:4px;"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closePendingChangesModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE LOG MODAL -->
+<div class="modal-overlay" id="change-log-modal" onclick="if(event.target===this)closeChangeLogModal()">
+  <div class="modal" style="max-width:680px;">
+    <h2>📓 Bitácora de cambios</h2>
+    <div style="background:rgba(45,127,249,0.08); border:1px solid rgba(45,127,249,0.3); border-radius:6px; padding:10px 12px; margin-bottom:14px; font-size:12px; color:#94A3B8; line-height:1.5;">
+      💡 Historial de los últimos 100 cambios al inventario (agregar, editar, eliminar, aprobar, rechazar).
+    </div>
+    <div id="change-log-list" style="max-height:60vh; overflow-y:auto; padding-right:4px;"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeChangeLogModal()">Cerrar</button>
+    </div>
+  </div>
 </div>
 
 <!-- TRACKS LIST MODAL (admin) -->
@@ -713,10 +754,15 @@
       <label>Notas (opcional)</label>
       <textarea id="im-notes" placeholder="Ej: comprado en Costco Tlalpan"></textarea>
     </div>
+    <div class="field" id="im-reason-field" style="display:none; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:10px;">
+      <label style="color:#F59E0B; font-weight:600;">💭 Razón del cambio (opcional)</label>
+      <textarea id="im-reason" placeholder="Ej: porque ahora usamos otra marca / se nos rompió todo / etc..." style="background:transparent;"></textarea>
+      <div style="font-size:11px; color:#94A3B8; margin-top:6px;">Esta razón ayudará al admin a entender por qué propones este cambio.</div>
+    </div>
     <div class="modal-actions">
       <button class="btn danger" id="im-delete" onclick="deleteCurrentItem()" style="display:none; margin-right:auto;">Eliminar</button>
       <button class="btn" onclick="closeItemModal()">Cancelar</button>
-      <button class="btn primary" onclick="saveItem()">Guardar</button>
+      <button class="btn primary" id="im-save" onclick="saveItem()">Guardar</button>
     </div>
   </div>
 </div>
@@ -842,7 +888,9 @@ const state = {
   filter: 'all',
   currentItemId: null,
   currentSectionId: null,
-  team: {}
+  team: {},
+  pendingChanges: [],  // propuestas de workers esperando aprobación
+  changeLog: []        // bitácora histórica de cambios
 };
 
 let firestoreUnsubscribe = null;
@@ -991,6 +1039,8 @@ async function saveToFirestore() {
       sections: state.sections,
       trackInfo: state.trackInfo,
       tracks: state.tracks,
+      pendingChanges: state.pendingChanges || [],
+      changeLog: (state.changeLog || []).slice(0, 200),  // cap to last 200 entries
       _lastModifiedSession: window.sessionIdPista,
       _lastModifiedBy: window.currentUser.uid,
       _lastModifiedByName: window.currentUserName || 'Unknown',
@@ -1027,6 +1077,8 @@ function subscribeToFirestore() {
     if (data.trackInfo) state.trackInfo = data.trackInfo;
     if (data.tracks) state.tracks = data.tracks;
     if (data.team) state.team = data.team;
+    state.pendingChanges = Array.isArray(data.pendingChanges) ? data.pendingChanges : [];
+    state.changeLog = Array.isArray(data.changeLog) ? data.changeLog : [];
     suppressSave = false;
     cloudReady = true;
     render();
@@ -1072,6 +1124,49 @@ function render() {
   renderStats();
   renderTrackInfo();
   renderSections();
+  renderPendingBanner();
+  applyRoleUI();
+}
+
+function applyRoleUI() {
+  const admin = isAdmin();
+  // Hide section management and reset for workers
+  const sectionBtn = document.getElementById('btn-add-section');
+  if (sectionBtn) sectionBtn.style.display = admin ? '' : 'none';
+  const resetBtn = document.getElementById('btn-reset');
+  if (resetBtn) resetBtn.style.display = admin ? '' : 'none';
+}
+
+function renderPendingBanner() {
+  const banner = document.getElementById('pending-banner');
+  const bannerTitle = document.getElementById('pending-banner-title');
+  const bannerSubtitle = document.getElementById('pending-banner-subtitle');
+  const pendingBtn = document.getElementById('btn-pending-changes');
+  const countBadge = document.getElementById('pending-count-badge');
+
+  const changes = state.pendingChanges || [];
+  const count = changes.length;
+
+  if (countBadge) countBadge.textContent = count;
+
+  // Show button & banner based on role and count
+  const admin = isAdmin();
+  const myProposals = changes.filter(c => c.proposedBy === (window.currentUserName || 'Worker')).length;
+
+  if (admin && count > 0) {
+    if (banner) banner.style.display = '';
+    if (bannerTitle) bannerTitle.textContent = `${count} cambio${count > 1 ? 's' : ''} pendiente${count > 1 ? 's' : ''} de tu aprobación`;
+    if (bannerSubtitle) bannerSubtitle.textContent = `Propuestos por: ${[...new Set(changes.map(c => c.proposedBy))].join(', ')}`;
+    if (pendingBtn) pendingBtn.style.display = '';
+  } else if (!admin && myProposals > 0) {
+    if (banner) banner.style.display = '';
+    if (bannerTitle) bannerTitle.textContent = `Tienes ${myProposals} propuesta${myProposals > 1 ? 's' : ''} esperando aprobación`;
+    if (bannerSubtitle) bannerSubtitle.textContent = 'Toca para revisar o cancelar';
+    if (pendingBtn) pendingBtn.style.display = '';
+  } else {
+    if (banner) banner.style.display = 'none';
+    if (pendingBtn) pendingBtn.style.display = admin && count === 0 ? 'none' : (admin ? '' : 'none');
+  }
 }
 
 function renderTrackInfo() {
@@ -1156,7 +1251,15 @@ function renderSections() {
           <span class="section-toggle">▼</span>
         </div>
         <div class="section-items">
-          ${filteredItems.length === 0 ? '<div class="empty-state" style="padding: 20px;"><div style="font-size: 12px;">Sin items en este filtro</div></div>' : filteredItems.map(item => `
+          ${filteredItems.length === 0 ? '<div class="empty-state" style="padding: 20px;"><div style="font-size: 12px;">Sin items en este filtro</div></div>' : filteredItems.map(item => {
+            const pending = getPendingForItem(item.id);
+            const pendingBadge = pending ? `
+              <div style="display:flex; align-items:center; gap:6px; padding:4px 8px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.4); border-radius:6px; margin-top:6px; cursor:pointer;" onclick="event.stopPropagation(); openPendingChangesModal();">
+                <span style="font-size:11px;">${pending.kind === 'remove' ? '🗑️' : '✏️'}</span>
+                <span style="font-size:10px; color:#F59E0B; font-weight:600;">${pending.kind === 'remove' ? 'Eliminación' : 'Edición'} propuesta por ${escapeHTML(pending.proposedBy)}</span>
+              </div>
+            ` : '';
+            return `
             <div class="item ${item.checked ? 'checked' : ''}" data-item-id="${item.id}">
               <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${section.id}', '${item.id}')"></div>
               <div class="item-body" onclick="openEditItemModal('${section.id}', '${item.id}')">
@@ -1167,6 +1270,7 @@ function renderSections() {
                     ${item.notes ? `<span style="color:#94A3B8; font-style: italic;">"${escapeHTML(item.notes.substring(0, 50))}${item.notes.length > 50 ? '…' : ''}"</span>` : ''}
                   </div>
                 ` : ''}
+                ${pendingBadge}
               </div>
               <input class="item-qty" type="text" value="${escapeHTML(item.qty || '')}" placeholder="—"
                 onclick="event.stopPropagation();"
@@ -1179,7 +1283,8 @@ function renderSections() {
                 <option value="agotado" ${item.status === 'agotado' ? 'selected' : ''}>🚫 agotado</option>
               </select>
             </div>
-          `).join('')}
+          `;
+          }).join('')}
         </div>
         <div class="section-actions">
           <button class="btn small" onclick="addItemToSection('${section.id}')">+ Item aquí</button>
@@ -1231,10 +1336,33 @@ function updateItemField(sectionId, itemId, field, value) {
 // ============================================================
 // ITEM MODAL
 // ============================================================
+function applyRoleUIToItemModal(mode) {
+  // mode: 'add' | 'edit'
+  const reasonField = document.getElementById('im-reason-field');
+  const reasonInput = document.getElementById('im-reason');
+  const saveBtn = document.getElementById('im-save');
+  const deleteBtn = document.getElementById('im-delete');
+  const title = document.getElementById('item-modal-title');
+
+  if (reasonInput) reasonInput.value = '';
+
+  if (isAdmin()) {
+    if (reasonField) reasonField.style.display = 'none';
+    if (saveBtn) saveBtn.textContent = 'Guardar';
+    if (deleteBtn) deleteBtn.textContent = 'Eliminar';
+    if (title) title.textContent = mode === 'edit' ? 'Editar item' : '+ Nuevo item';
+  } else {
+    // Worker: show reason field, label buttons as proposals
+    if (reasonField) reasonField.style.display = '';
+    if (saveBtn) saveBtn.textContent = mode === 'edit' ? '📋 Proponer cambio' : '📋 Proponer agregar';
+    if (deleteBtn) deleteBtn.textContent = '📋 Proponer eliminar';
+    if (title) title.textContent = mode === 'edit' ? 'Proponer edición' : 'Proponer nuevo item';
+  }
+}
+
 function openAddItemModal() {
   state.currentItemId = null;
   state.currentSectionId = null;
-  document.getElementById('item-modal-title').textContent = '+ Nuevo item';
   document.getElementById('im-name').value = '';
   document.getElementById('im-qty').value = '';
   document.getElementById('im-status').value = 'ok';
@@ -1242,6 +1370,7 @@ function openAddItemModal() {
   document.getElementById('im-notes').value = '';
   populateSectionSelect();
   document.getElementById('im-delete').style.display = 'none';
+  applyRoleUIToItemModal('add');
   document.getElementById('item-modal').classList.add('open');
   setTimeout(() => document.getElementById('im-name').focus(), 50);
 }
@@ -1258,7 +1387,6 @@ function openEditItemModal(sectionId, itemId) {
   if (!item) return;
   state.currentItemId = itemId;
   state.currentSectionId = sectionId;
-  document.getElementById('item-modal-title').textContent = 'Editar item';
   document.getElementById('im-name').value = item.name;
   document.getElementById('im-qty').value = item.qty || '';
   document.getElementById('im-status').value = item.status || 'ok';
@@ -1267,6 +1395,7 @@ function openEditItemModal(sectionId, itemId) {
   populateSectionSelect();
   document.getElementById('im-section').value = sectionId;
   document.getElementById('im-delete').style.display = '';
+  applyRoleUIToItemModal('edit');
   document.getElementById('item-modal').classList.add('open');
 }
 
@@ -1279,12 +1408,65 @@ function closeItemModal() {
   document.getElementById('item-modal').classList.remove('open');
 }
 
+function isAdmin() {
+  return window.currentUserRole === 'admin';
+}
+
+function logChange(action, summary, details) {
+  if (!state.changeLog) state.changeLog = [];
+  state.changeLog.unshift({
+    id: 'log_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+    timestamp: new Date().toISOString(),
+    user: window.currentUserName || 'Unknown',
+    action,   // 'add' | 'edit' | 'remove' | 'approve' | 'reject'
+    summary,  // brief text
+    details   // optional object with old/new values
+  });
+  // Cap to last 200 entries
+  if (state.changeLog.length > 200) state.changeLog = state.changeLog.slice(0, 200);
+}
+
+function findItemById(sectionId, itemId) {
+  const s = state.sections.find(x => x.id === sectionId);
+  if (!s) return null;
+  return s.items.find(i => i.id === itemId) || null;
+}
+
+// Check if an item already has a pending proposal
+function getPendingForItem(itemId) {
+  if (!Array.isArray(state.pendingChanges)) return null;
+  return state.pendingChanges.find(c => c.itemId === itemId) || null;
+}
+
+function getPendingForSection(sectionId) {
+  if (!Array.isArray(state.pendingChanges)) return [];
+  return state.pendingChanges.filter(c => c.sectionId === sectionId && !c.itemId);
+}
+
+function proposeChange(change) {
+  if (!Array.isArray(state.pendingChanges)) state.pendingChanges = [];
+  // If editing/deleting same item, replace previous proposal
+  if (change.itemId) {
+    state.pendingChanges = state.pendingChanges.filter(c => c.itemId !== change.itemId);
+  }
+  state.pendingChanges.push({
+    id: 'pc_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+    proposedAt: new Date().toISOString(),
+    proposedBy: window.currentUserName || 'Worker',
+    ...change
+  });
+  logChange('propose', `${window.currentUserName || 'Worker'} propuso: ${change.summary || change.kind}`, change);
+}
+
 function saveItem() {
   const name = document.getElementById('im-name').value.trim();
   if (!name) { toast('Falta nombre'); return; }
   const sectionId = document.getElementById('im-section').value;
   const targetSection = state.sections.find(s => s.id === sectionId);
   if (!targetSection) { toast('Sección inválida'); return; }
+
+  const reasonEl = document.getElementById('im-reason');
+  const reason = reasonEl ? reasonEl.value.trim() : '';
 
   const itemData = {
     name,
@@ -1294,43 +1476,289 @@ function saveItem() {
     notes: document.getElementById('im-notes').value.trim()
   };
 
-  if (state.currentItemId) {
-    // Edit existing
-    const currentSection = state.sections.find(s => s.id === state.currentSectionId);
-    const item = currentSection?.items.find(i => i.id === state.currentItemId);
-    if (item) {
-      Object.assign(item, itemData);
-      // If section changed, move it
-      if (state.currentSectionId !== sectionId) {
-        currentSection.items = currentSection.items.filter(i => i.id !== state.currentItemId);
-        targetSection.items.push(item);
+  // ===== ADMIN: apply directly =====
+  if (isAdmin()) {
+    if (state.currentItemId) {
+      // Edit existing
+      const currentSection = state.sections.find(s => s.id === state.currentSectionId);
+      const item = currentSection?.items.find(i => i.id === state.currentItemId);
+      if (item) {
+        const oldName = item.name;
+        Object.assign(item, itemData);
+        if (state.currentSectionId !== sectionId) {
+          currentSection.items = currentSection.items.filter(i => i.id !== state.currentItemId);
+          targetSection.items.push(item);
+        }
+        logChange('edit', `Editó "${oldName}" → "${name}"`, { itemId: state.currentItemId, before: { name: oldName }, after: itemData });
       }
+    } else {
+      // New
+      const newItem = { id: uid(), checked: false, ...itemData };
+      targetSection.items.push(newItem);
+      logChange('add', `Agregó "${name}" en ${targetSection.icon} ${targetSection.name}`, { sectionId, after: itemData });
     }
-  } else {
-    // New
-    targetSection.items.push({
-      id: uid(),
-      checked: false,
-      ...itemData
-    });
+    render();
+    scheduleSave();
+    closeItemModal();
+    toast('Guardado ✓');
+    return;
   }
 
-  render();
-  scheduleSave();
-  closeItemModal();
-  toast('Guardado ✓');
+  // ===== MEMBER: propose change =====
+  if (state.currentItemId) {
+    // Worker is proposing edit on existing item
+    const currentSection = state.sections.find(s => s.id === state.currentSectionId);
+    const item = currentSection?.items.find(i => i.id === state.currentItemId);
+    if (!item) { toast('Item no encontrado'); return; }
+
+    proposeChange({
+      kind: 'edit',
+      sectionId,
+      originalSectionId: state.currentSectionId,
+      itemId: state.currentItemId,
+      itemName: item.name,
+      before: {
+        name: item.name, qty: item.qty, status: item.status,
+        lastPurchase: item.lastPurchase, notes: item.notes
+      },
+      after: itemData,
+      reason,
+      summary: `Editar "${item.name}"`
+    });
+    scheduleSave();
+    closeItemModal();
+    render();
+    toast('📋 Cambio propuesto, esperando aprobación de admin');
+  } else {
+    // Worker proposing new item
+    proposeChange({
+      kind: 'add',
+      sectionId,
+      itemName: name,
+      after: itemData,
+      reason,
+      summary: `Agregar "${name}" en ${targetSection.icon} ${targetSection.name}`
+    });
+    scheduleSave();
+    closeItemModal();
+    render();
+    toast('📋 Nuevo item propuesto, esperando aprobación');
+  }
 }
 
 function deleteCurrentItem() {
   if (!state.currentItemId || !state.currentSectionId) return;
-  if (!confirm('¿Eliminar este item?')) return;
   const s = state.sections.find(x => x.id === state.currentSectionId);
   if (!s) return;
-  s.items = s.items.filter(i => i.id !== state.currentItemId);
-  render();
+  const item = s.items.find(i => i.id === state.currentItemId);
+  if (!item) return;
+
+  // ===== ADMIN: delete directly =====
+  if (isAdmin()) {
+    if (!confirm(`¿Eliminar "${item.name}"?`)) return;
+    s.items = s.items.filter(i => i.id !== state.currentItemId);
+    // Also clean up any pending changes for this item
+    state.pendingChanges = (state.pendingChanges || []).filter(c => c.itemId !== state.currentItemId);
+    logChange('remove', `Eliminó "${item.name}" de ${s.icon} ${s.name}`, { itemId: state.currentItemId, before: item });
+    render();
+    scheduleSave();
+    closeItemModal();
+    toast('Item eliminado');
+    return;
+  }
+
+  // ===== MEMBER: propose delete =====
+  const reasonEl = document.getElementById('im-reason');
+  const reason = reasonEl ? reasonEl.value.trim() : '';
+  if (!confirm(`¿Proponer eliminar "${item.name}"?\n\nEl admin tendrá que aprobarlo antes de borrarse.`)) return;
+
+  proposeChange({
+    kind: 'remove',
+    sectionId: state.currentSectionId,
+    itemId: state.currentItemId,
+    itemName: item.name,
+    before: { name: item.name, qty: item.qty, status: item.status, lastPurchase: item.lastPurchase, notes: item.notes },
+    reason,
+    summary: `Eliminar "${item.name}"`
+  });
   scheduleSave();
   closeItemModal();
-  toast('Item eliminado');
+  render();
+  toast('📋 Eliminación propuesta, esperando aprobación');
+}
+
+// ============================================================
+// APPROVAL FLOW (admin only)
+// ============================================================
+function approveChange(changeId) {
+  if (!isAdmin()) return;
+  const change = (state.pendingChanges || []).find(c => c.id === changeId);
+  if (!change) return;
+
+  if (change.kind === 'add') {
+    const targetSection = state.sections.find(s => s.id === change.sectionId);
+    if (!targetSection) { toast('Sección no encontrada'); return; }
+    targetSection.items.push({ id: uid(), checked: false, ...change.after });
+    logChange('approve', `Aprobó agregar "${change.itemName}" (propuesto por ${change.proposedBy})`, change);
+  } else if (change.kind === 'edit') {
+    const currentSection = state.sections.find(s => s.id === change.originalSectionId);
+    const targetSection = state.sections.find(s => s.id === change.sectionId);
+    const item = currentSection?.items.find(i => i.id === change.itemId);
+    if (!item) { toast('Item no encontrado'); return; }
+    Object.assign(item, change.after);
+    if (change.originalSectionId !== change.sectionId && targetSection) {
+      currentSection.items = currentSection.items.filter(i => i.id !== change.itemId);
+      targetSection.items.push(item);
+    }
+    logChange('approve', `Aprobó editar "${change.itemName}" (propuesto por ${change.proposedBy})`, change);
+  } else if (change.kind === 'remove') {
+    const s = state.sections.find(x => x.id === change.sectionId);
+    if (!s) { toast('Sección no encontrada'); return; }
+    s.items = s.items.filter(i => i.id !== change.itemId);
+    logChange('approve', `Aprobó eliminar "${change.itemName}" (propuesto por ${change.proposedBy})`, change);
+  }
+
+  state.pendingChanges = state.pendingChanges.filter(c => c.id !== changeId);
+  render();
+  scheduleSave();
+  toast('✓ Cambio aprobado');
+}
+
+function rejectChange(changeId) {
+  if (!isAdmin()) return;
+  const change = (state.pendingChanges || []).find(c => c.id === changeId);
+  if (!change) return;
+  const reason = prompt('¿Razón de rechazo? (opcional)', '');
+  if (reason === null) return;  // cancelled
+  state.pendingChanges = state.pendingChanges.filter(c => c.id !== changeId);
+  logChange('reject', `Rechazó ${change.summary || change.kind} (propuesto por ${change.proposedBy})${reason ? ': ' + reason : ''}`, { ...change, rejectReason: reason });
+  render();
+  scheduleSave();
+  toast('Cambio rechazado');
+}
+
+// Worker can cancel their own pending proposal
+function cancelOwnProposal(changeId) {
+  const change = (state.pendingChanges || []).find(c => c.id === changeId);
+  if (!change) return;
+  if (change.proposedBy !== (window.currentUserName || 'Worker') && !isAdmin()) {
+    toast('Solo el autor o admin pueden cancelar');
+    return;
+  }
+  if (!confirm(`¿Cancelar tu propuesta: ${change.summary}?`)) return;
+  state.pendingChanges = state.pendingChanges.filter(c => c.id !== changeId);
+  logChange('cancel', `Canceló su propuesta: ${change.summary}`, change);
+  render();
+  scheduleSave();
+  toast('Propuesta cancelada');
+}
+
+function openPendingChangesModal() {
+  document.getElementById('pending-changes-modal').classList.add('open');
+  renderPendingChangesList();
+}
+
+function closePendingChangesModal() {
+  document.getElementById('pending-changes-modal').classList.remove('open');
+}
+
+function renderPendingChangesList() {
+  const container = document.getElementById('pending-changes-list');
+  if (!container) return;
+  const changes = state.pendingChanges || [];
+  if (changes.length === 0) {
+    container.innerHTML = '<div class="empty-state" style="padding:30px;"><div style="font-size:14px;">No hay cambios pendientes</div></div>';
+    return;
+  }
+  const admin = isAdmin();
+  container.innerHTML = changes.map(c => {
+    const kindIcon = c.kind === 'add' ? '➕' : c.kind === 'remove' ? '🗑️' : '✏️';
+    const kindColor = c.kind === 'add' ? '#10B981' : c.kind === 'remove' ? '#EF4444' : '#3B82F6';
+    const kindLabel = c.kind === 'add' ? 'Agregar' : c.kind === 'remove' ? 'Eliminar' : 'Editar';
+    const ts = new Date(c.proposedAt);
+    const tsStr = ts.toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const section = c.sectionId ? state.sections.find(s => s.id === c.sectionId) : null;
+
+    // Build diff description
+    let diffHtml = '';
+    if (c.kind === 'edit' && c.before && c.after) {
+      const diffs = [];
+      ['name', 'qty', 'status', 'lastPurchase', 'notes'].forEach(field => {
+        const before = c.before[field] || '';
+        const after = c.after[field] || '';
+        if (String(before) !== String(after)) {
+          diffs.push(`<div style="font-size:11px; color:#94A3B8; margin-top:3px; font-family:monospace;"><span style="color:#EF4444;">${field}:</span> "${escapeHTML(String(before))}" → <span style="color:#10B981;">"${escapeHTML(String(after))}"</span></div>`);
+        }
+      });
+      diffHtml = diffs.join('');
+    } else if (c.kind === 'add' && c.after) {
+      diffHtml = `<div style="font-size:11px; color:#10B981; margin-top:3px; font-family:monospace;">name: ${escapeHTML(c.after.name)} · qty: ${escapeHTML(c.after.qty || '—')} · status: ${escapeHTML(c.after.status || 'ok')}</div>`;
+    } else if (c.kind === 'remove' && c.before) {
+      diffHtml = `<div style="font-size:11px; color:#EF4444; margin-top:3px; font-family:monospace;">name: ${escapeHTML(c.before.name)} · qty: ${escapeHTML(c.before.qty || '—')}</div>`;
+    }
+
+    return `
+      <div style="background:#0A0A0A; border:1px solid ${kindColor}55; border-left:3px solid ${kindColor}; border-radius:8px; padding:12px; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
+          <span style="font-size:18px;">${kindIcon}</span>
+          <span style="background:${kindColor}; color:#FFF; font-size:10px; padding:2px 8px; border-radius:10px; font-weight:600;">${kindLabel}</span>
+          <span style="font-weight:600; color:#FFF; font-size:13px;">${escapeHTML(c.itemName || '(sin nombre)')}</span>
+          ${section ? `<span style="font-size:11px; color:#94A3B8;">en ${section.icon} ${escapeHTML(section.name)}</span>` : ''}
+        </div>
+        ${diffHtml}
+        ${c.reason ? `<div style="margin-top:6px; padding:6px 8px; background:rgba(245,158,11,0.06); border-left:2px solid #F59E0B; border-radius:4px; font-size:11px; color:#E5E7EB; font-style:italic;">💭 ${escapeHTML(c.reason)}</div>` : ''}
+        <div style="margin-top:8px; font-size:10px; color:#94A3B8; font-family:monospace;">
+          Propuesto por <strong style="color:#FFF;">${escapeHTML(c.proposedBy)}</strong> · ${tsStr}
+        </div>
+        <div style="display:flex; gap:6px; margin-top:8px;">
+          ${admin ? `
+            <button class="btn small primary" onclick="approveChange('${c.id}')" style="flex:1;">✓ Aprobar</button>
+            <button class="btn small" onclick="rejectChange('${c.id}')" style="flex:1; background:#1F1F1F; color:#EF4444; border-color:#EF4444;">✗ Rechazar</button>
+          ` : (c.proposedBy === (window.currentUserName || 'Worker')) ? `
+            <button class="btn small" onclick="cancelOwnProposal('${c.id}')" style="flex:1; color:#94A3B8;">Cancelar mi propuesta</button>
+          ` : `
+            <span style="font-size:11px; color:#94A3B8; font-style:italic;">Esperando aprobación...</span>
+          `}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openChangeLogModal() {
+  document.getElementById('change-log-modal').classList.add('open');
+  renderChangeLogList();
+}
+
+function closeChangeLogModal() {
+  document.getElementById('change-log-modal').classList.remove('open');
+}
+
+function renderChangeLogList() {
+  const container = document.getElementById('change-log-list');
+  if (!container) return;
+  const log = state.changeLog || [];
+  if (log.length === 0) {
+    container.innerHTML = '<div class="empty-state" style="padding:30px;"><div style="font-size:14px;">Sin cambios registrados aún</div></div>';
+    return;
+  }
+  container.innerHTML = log.slice(0, 100).map(entry => {
+    const icons = { add: '➕', edit: '✏️', remove: '🗑️', approve: '✓', reject: '✗', propose: '📋', cancel: '↺' };
+    const colors = { add: '#10B981', edit: '#3B82F6', remove: '#EF4444', approve: '#10B981', reject: '#EF4444', propose: '#F59E0B', cancel: '#94A3B8' };
+    const icon = icons[entry.action] || '•';
+    const color = colors[entry.action] || '#94A3B8';
+    const ts = new Date(entry.timestamp);
+    const tsStr = ts.toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    return `
+      <div style="display:flex; gap:10px; padding:8px 10px; background:#0A0A0A; border-left:3px solid ${color}; border-radius:4px; margin-bottom:5px;">
+        <div style="font-size:16px;">${icon}</div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:12px; color:#E5E7EB; line-height:1.4; word-break: break-word;">${escapeHTML(entry.summary)}</div>
+          <div style="font-size:10px; color:#94A3B8; margin-top:2px; font-family:monospace;">${tsStr} · ${escapeHTML(entry.user)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 // ============================================================
