@@ -30,12 +30,16 @@
     display: block; font-size: 9px; font-family: monospace;
     color: #2D7FF9; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;
   }
-  .user-bar button {
+  .user-bar button, .user-bar a.btn-link {
     background: transparent; border: 1px solid #1E293B; color: #94A3B8;
     padding: 5px 10px; border-radius: 5px; font-size: 11px; cursor: pointer;
-    font-family: inherit;
+    font-family: inherit; text-decoration: none; display: inline-block;
   }
-  .user-bar button:hover { color: #FFF; border-color: #2D7FF9; }
+  .user-bar button:hover, .user-bar a.btn-link:hover { color: #FFF; border-color: #2D7FF9; }
+  .user-bar a.btn-dashboard {
+    border-color: #2D7FF9; color: #2D7FF9; font-weight: 600;
+  }
+  .user-bar a.btn-dashboard:hover { background: rgba(45,127,249,0.1); color: #FFF; }
   .sync-pill {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 10px; color: #94A3B8; font-family: monospace;
@@ -57,395 +61,179 @@
     margin-bottom: 12px;
     border: 1px solid #2D7FF9;
   }
-  .logo-text {
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    margin-bottom: 4px;
-  }
+  .logo-text { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
   .logo-lap { color: #FFFFFF; }
   .logo-kr { color: #2D7FF9; }
   .header-subtitle {
-    color: #94A3B8;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-family: monospace;
-    margin-bottom: 12px;
+    color: #94A3B8; font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; font-family: monospace; margin-bottom: 12px;
   }
-  .header-title {
-    color: #FFFFFF;
-    font-size: 18px;
-    font-weight: 600;
-    margin-top: 4px;
-  }
+  .header-title { color: #FFFFFF; font-size: 18px; font-weight: 600; margin-top: 4px; }
 
   /* === TRACK INFO === */
   .track-info {
-    background: #111111;
-    border: 1px solid #1E293B;
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 12px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    background: #111111; border: 1px solid #1E293B; border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 12px;
   }
   .track-info .ti-field label {
-    font-family: monospace;
-    font-size: 9px;
-    color: #94A3B8;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    display: block;
-    margin-bottom: 4px;
+    font-family: monospace; font-size: 9px; color: #94A3B8;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    display: block; margin-bottom: 4px;
   }
   .track-info .ti-field input {
-    background: transparent;
-    color: #E5E7EB;
-    border: none;
-    font-size: 13px;
-    font-family: inherit;
-    padding: 2px 0;
-    width: 100%;
+    background: transparent; color: #E5E7EB; border: none;
+    font-size: 13px; font-family: inherit; padding: 2px 0; width: 100%;
   }
-  .track-info .ti-field input:focus {
-    outline: none;
-    color: #2D7FF9;
-  }
-  @media (max-width: 500px) {
-    .track-info { grid-template-columns: 1fr; }
-  }
+  .track-info .ti-field input:focus { outline: none; color: #2D7FF9; }
 
   /* === STATS BAR === */
   .stats-bar {
-    background: #111111;
-    border: 1px solid #1E293B;
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 12px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    text-align: center;
+    background: #111111; border: 1px solid #1E293B; border-radius: 10px;
+    padding: 12px; margin-bottom: 12px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center;
   }
-  .stat-card {
-    padding: 6px;
-  }
-  .stat-card .num {
-    font-size: 22px;
-    font-weight: 700;
-    color: #FFF;
-    font-feature-settings: "tnum";
-  }
+  .stat-card { padding: 6px; }
+  .stat-card .num { font-size: 22px; font-weight: 700; color: #FFF; font-feature-settings: "tnum"; }
   .stat-card .num.warn { color: #F59E0B; }
   .stat-card .num.danger { color: #EF4444; }
   .stat-card .num.good { color: #10B981; }
   .stat-card .label {
-    font-family: monospace;
-    font-size: 9px;
-    color: #94A3B8;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 2px;
+    font-family: monospace; font-size: 9px; color: #94A3B8;
+    text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;
   }
-  @media (max-width: 500px) {
-    .stat-card .num { font-size: 18px; }
-  }
+  @media (max-width: 500px) { .stat-card .num { font-size: 18px; } }
 
   /* === ACTIONS BAR === */
-  .actions-bar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 14px;
-    flex-wrap: wrap;
-  }
+  .actions-bar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
   .btn {
-    background: #1E293B;
-    color: #E5E7EB;
-    border: 1px solid #334155;
-    padding: 9px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 13px;
-    transition: all 0.15s;
-    white-space: nowrap;
+    background: #1E293B; color: #E5E7EB; border: 1px solid #334155;
+    padding: 9px 14px; border-radius: 6px; cursor: pointer;
+    font-family: inherit; font-size: 13px; transition: all 0.15s; white-space: nowrap;
   }
-  .btn:hover {
-    background: #334155;
-    color: #FFF;
-  }
-  .btn.primary {
-    background: #2D7FF9;
-    color: #FFF;
-    border-color: #2D7FF9;
-  }
+  .btn:hover { background: #334155; color: #FFF; }
+  .btn.primary { background: #2D7FF9; color: #FFF; border-color: #2D7FF9; }
   .btn.primary:hover { background: #1E6BD8; }
   .btn.danger { color: #EF4444; border-color: rgba(239,68,68,0.3); }
   .btn.danger:hover { background: rgba(239,68,68,0.1); color: #FCA5A5; }
   .btn.small { padding: 6px 10px; font-size: 11px; }
 
   /* === FILTERS === */
-  .filters {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 12px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
+  .filters { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
   .filter-chip {
-    background: #0A0A0A;
-    color: #94A3B8;
-    border: 1px solid #1E293B;
-    padding: 6px 12px;
-    border-radius: 16px;
-    font-size: 12px;
-    cursor: pointer;
-    white-space: nowrap;
-    font-family: inherit;
+    background: #0A0A0A; color: #94A3B8; border: 1px solid #1E293B;
+    padding: 6px 12px; border-radius: 16px; font-size: 12px;
+    cursor: pointer; white-space: nowrap; font-family: inherit;
   }
-  .filter-chip.active {
-    background: #2D7FF9;
-    color: #FFF;
-    border-color: #2D7FF9;
-  }
+  .filter-chip.active { background: #2D7FF9; color: #FFF; border-color: #2D7FF9; }
 
   /* === SECTIONS === */
-  .section {
-    background: #111111;
-    border: 1px solid #1E293B;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    overflow: hidden;
-  }
+  .section { background: #111111; border: 1px solid #1E293B; border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
   .section-header {
-    display: flex;
-    align-items: center;
-    padding: 14px 16px;
-    cursor: pointer;
-    user-select: none;
-    background: #0F172A;
-    border-bottom: 1px solid #1E293B;
+    display: flex; align-items: center;
+    padding: 14px 16px; cursor: pointer; user-select: none;
+    background: #0F172A; border-bottom: 1px solid #1E293B;
   }
   .section-header:hover { background: #1E293B; }
   .section.collapsed .section-header { border-bottom: none; }
-  .section-icon {
-    font-size: 22px;
-    margin-right: 12px;
-    line-height: 1;
-  }
-  .section-title {
-    flex: 1;
-    font-size: 14px;
-    font-weight: 600;
-    color: #FFF;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .section-progress {
-    font-family: monospace;
-    font-size: 11px;
-    color: #94A3B8;
-    margin-right: 10px;
-  }
+  .section-icon { font-size: 22px; margin-right: 12px; line-height: 1; }
+  .section-title { flex: 1; font-size: 14px; font-weight: 600; color: #FFF; text-transform: uppercase; letter-spacing: 1px; }
+  .section-progress { font-family: monospace; font-size: 11px; color: #94A3B8; margin-right: 10px; }
   .section-progress .done { color: #10B981; font-weight: 600; }
-  .section-toggle {
-    font-size: 14px;
-    color: #94A3B8;
-    transition: transform 0.2s;
-  }
+  .section-toggle { font-size: 14px; color: #94A3B8; transition: transform 0.2s; }
   .section.collapsed .section-toggle { transform: rotate(-90deg); }
-  .section-items {
-    padding: 4px 0;
-  }
+  .section-items { padding: 4px 0; }
   .section.collapsed .section-items { display: none; }
-  .section-actions {
-    padding: 8px 12px;
-    border-top: 1px solid #1E293B;
-    display: flex;
-    gap: 6px;
+  .section-actions { padding: 8px 12px; border-top: 1px solid #1E293B; display: flex; gap: 6px; }
+
+  /* === REORDER BUTTONS === */
+  .reorder-btns { display: flex; flex-direction: column; gap: 2px; margin-right: 6px; }
+  .reorder-btn {
+    background: transparent; border: 1px solid #1E293B; color: #94A3B8;
+    width: 22px; height: 16px; border-radius: 3px; cursor: pointer;
+    font-size: 9px; display: flex; align-items: center; justify-content: center;
+    padding: 0; line-height: 1; font-family: inherit;
   }
+  .reorder-btn:hover { background: #1E293B; color: #FFF; border-color: #2D7FF9; }
+  .reorder-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+  .reorder-btn:disabled:hover { background: transparent; color: #94A3B8; border-color: #1E293B; }
 
   /* === ITEMS === */
   .item {
-    display: flex;
-    align-items: center;
-    padding: 10px 14px;
-    border-bottom: 1px solid #0F172A;
-    gap: 10px;
-    transition: background 0.15s;
+    display: flex; align-items: center; padding: 10px 14px;
+    border-bottom: 1px solid #0F172A; gap: 10px; transition: background 0.15s;
   }
   .item:last-child { border-bottom: none; }
   .item:hover { background: #0F172A; }
   .item.checked { opacity: 0.55; }
   .item.checked .item-name { text-decoration: line-through; }
-
   .checkbox {
-    width: 22px;
-    height: 22px;
-    border: 2px solid #334155;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.15s;
+    width: 22px; height: 22px; border: 2px solid #334155; border-radius: 5px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.15s;
   }
-  .checkbox.checked {
-    background: #10B981;
-    border-color: #10B981;
-  }
-  .checkbox.checked::after {
-    content: "✓";
-    color: #FFF;
-    font-size: 14px;
-    font-weight: 700;
-  }
-
-  .item-body {
-    flex: 1;
-    min-width: 0;
-    cursor: pointer;
-  }
-  .item-name {
-    font-size: 14px;
-    color: #E5E7EB;
-    line-height: 1.3;
-  }
-  .item-meta {
-    font-size: 11px;
-    color: #6B7280;
-    margin-top: 3px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
+  .checkbox.checked { background: #10B981; border-color: #10B981; }
+  .checkbox.checked::after { content: "✓"; color: #FFF; font-size: 14px; font-weight: 700; }
+  .item-body { flex: 1; min-width: 0; cursor: pointer; }
+  .item-name { font-size: 14px; color: #E5E7EB; line-height: 1.3; }
+  .item-meta { font-size: 11px; color: #6B7280; margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; }
   .item-meta .badge {
-    background: #0A0A0A;
-    border: 1px solid #1E293B;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 10px;
+    background: #0A0A0A; border: 1px solid #1E293B; padding: 1px 6px;
+    border-radius: 4px; font-family: monospace; font-size: 10px;
   }
-
   .item-qty {
-    background: #0A0A0A;
-    color: #94A3B8;
-    border: 1px solid #1E293B;
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-family: monospace;
-    font-size: 12px;
-    width: 50px;
-    text-align: center;
-    flex-shrink: 0;
+    background: #0A0A0A; color: #94A3B8; border: 1px solid #1E293B;
+    padding: 4px 8px; border-radius: 5px; font-family: monospace; font-size: 12px;
+    width: 50px; text-align: center; flex-shrink: 0;
   }
-  .item-qty:focus {
-    outline: none;
-    color: #FFF;
-    border-color: #2D7FF9;
-  }
-
+  .item-qty:focus { outline: none; color: #FFF; border-color: #2D7FF9; }
   .item-status {
-    background: #0A0A0A;
-    border: 1px solid #1E293B;
-    color: #94A3B8;
-    padding: 4px 6px;
-    border-radius: 5px;
-    font-size: 11px;
-    font-family: inherit;
-    cursor: pointer;
-    flex-shrink: 0;
-    min-width: 70px;
+    background: #0A0A0A; border: 1px solid #1E293B; color: #94A3B8;
+    padding: 4px 6px; border-radius: 5px; font-size: 11px;
+    font-family: inherit; cursor: pointer; flex-shrink: 0; min-width: 70px;
   }
   .item-status.falta { background: rgba(245,158,11,0.15); color: #F59E0B; border-color: #F59E0B; }
   .item-status.dañado { background: rgba(239,68,68,0.15); color: #EF4444; border-color: #EF4444; }
   .item-status.agotado { background: rgba(139,92,246,0.15); color: #8B5CF6; border-color: #8B5CF6; }
   .item-status.ok { background: rgba(16,185,129,0.1); color: #10B981; border-color: rgba(16,185,129,0.3); }
-
-  .item-menu {
-    background: transparent;
-    border: none;
-    color: #94A3B8;
-    cursor: pointer;
-    padding: 4px 8px;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
+  .item-menu { background: transparent; border: none; color: #94A3B8; cursor: pointer; padding: 4px 8px; font-size: 16px; flex-shrink: 0; }
   .item-menu:hover { color: #FFF; }
 
   /* === MODAL === */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-    z-index: 1000; display: none; align-items: center; justify-content: center;
-    padding: 16px;
+    z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px;
   }
   .modal-overlay.open { display: flex; }
   .modal {
-    background: #141414;
-    border: 1px solid #1E293B;
-    border-radius: 12px;
-    max-width: 500px;
-    width: 100%;
-    padding: 24px;
-    max-height: 90vh;
-    overflow-y: auto;
+    background: #141414; border: 1px solid #1E293B; border-radius: 12px;
+    max-width: 500px; width: 100%; padding: 24px; max-height: 90vh; overflow-y: auto;
   }
-  .modal h2 {
-    color: #FFF;
-    font-size: 18px;
-    margin-bottom: 16px;
-  }
+  .modal h2 { color: #FFF; font-size: 18px; margin-bottom: 16px; }
   .field { margin-bottom: 14px; }
   .field label {
-    display: block;
-    font-size: 11px;
-    color: #94A3B8;
-    margin-bottom: 5px;
-    font-family: monospace;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    display: block; font-size: 11px; color: #94A3B8; margin-bottom: 5px;
+    font-family: monospace; text-transform: uppercase; letter-spacing: 1px;
   }
   .field input, .field select, .field textarea {
-    width: 100%;
-    padding: 9px 12px;
-    background: #0A0A0A;
-    border: 1px solid #1E293B;
-    color: #FFF;
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 13px;
+    width: 100%; padding: 9px 12px; background: #0A0A0A; border: 1px solid #1E293B;
+    color: #FFF; border-radius: 6px; font-family: inherit; font-size: 13px;
   }
-  .field input:focus, .field select:focus, .field textarea:focus {
-    outline: none;
-    border-color: #2D7FF9;
-  }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #2D7FF9; }
   .field textarea { min-height: 60px; resize: vertical; }
-  .modal-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 18px;
-    justify-content: flex-end;
-  }
+  .modal-actions { display: flex; gap: 8px; margin-top: 18px; justify-content: flex-end; }
 
   /* === LOGIN OVERLAY === */
   #login-overlay {
     position: fixed; inset: 0;
     background: linear-gradient(135deg, #0A0A0A, #0F172A);
-    z-index: 9999;
-    display: flex; align-items: center; justify-content: center; padding: 20px;
+    z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;
   }
   #login-overlay .box {
     background: #141414; border: 1px solid #2D7FF9; border-radius: 16px;
     padding: 40px 30px; max-width: 420px; width: 100%; text-align: center;
     box-shadow: 0 30px 80px rgba(0,0,0,0.5);
   }
-  #login-overlay .brand {
-    font-size: 38px; line-height: 1; margin-bottom: 4px; font-weight: 700;
-  }
+  #login-overlay .brand { font-size: 38px; line-height: 1; margin-bottom: 4px; font-weight: 700; }
   #login-overlay .brand .lap { color: #FFF; }
   #login-overlay .brand .kr { color: #2D7FF9; }
   #login-overlay .subtitle {
@@ -482,9 +270,7 @@
     font-family: monospace; overflow: hidden; text-overflow: ellipsis;
     white-space: nowrap; min-width: 0;
   }
-  .team-member-row .member-name {
-    font-size: 13px; color: #E5E7EB; font-weight: 500;
-  }
+  .team-member-row .member-name { font-size: 13px; color: #E5E7EB; font-weight: 500; }
 
   /* === TOAST === */
   .toast {
@@ -503,31 +289,14 @@
 
   /* === REPORT MODAL === */
   .report-text {
-    background: #0A0A0A;
-    border: 1px solid #1E293B;
-    border-radius: 6px;
-    padding: 12px;
-    font-family: monospace;
-    font-size: 12px;
-    color: #E5E7EB;
-    white-space: pre-wrap;
-    max-height: 400px;
-    overflow-y: auto;
-    line-height: 1.5;
+    background: #0A0A0A; border: 1px solid #1E293B; border-radius: 6px;
+    padding: 12px; font-family: monospace; font-size: 12px; color: #E5E7EB;
+    white-space: pre-wrap; max-height: 400px; overflow-y: auto; line-height: 1.5;
   }
 
   /* === EMPTY STATE === */
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #6B7280;
-    font-size: 13px;
-  }
-  .empty-state .emoji {
-    font-size: 32px;
-    margin-bottom: 8px;
-    opacity: 0.5;
-  }
+  .empty-state { text-align: center; padding: 40px 20px; color: #6B7280; font-size: 13px; }
+  .empty-state .emoji { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
 
   /* === RESPONSIVE === */
   @media (max-width: 500px) {
@@ -539,6 +308,7 @@
     .logo-text { font-size: 22px; }
     .header-title { font-size: 14px; }
     .header { padding: 14px 16px; }
+    .reorder-btn { width: 26px; height: 18px; }
   }
 </style>
 </head>
@@ -578,6 +348,7 @@
 <div class="container" id="app-container" style="display:none;">
 
   <div class="user-bar">
+    <a href="https://lapkr.vercel.app/" class="btn-link btn-dashboard" title="Regresar al dashboard">← Dashboard</a>
     <img id="user-photo" src="" alt="">
     <div class="name">
       <span id="user-name">—</span>
@@ -596,14 +367,6 @@
 
   <div class="track-info">
     <div class="ti-field">
-      <label>Última pista</label>
-      <div style="display:flex; gap:6px; align-items:center;">
-        <select id="ti-last" onchange="onTrackInfoChange()" style="flex:1; background:transparent; color:#E5E7EB; border:none; font-size:13px; font-family:inherit; padding:2px 0; cursor:pointer;">
-          <option value="">— Seleccionar —</option>
-        </select>
-      </div>
-    </div>
-    <div class="ti-field">
       <label>Próxima pista</label>
       <div style="display:flex; gap:6px; align-items:center;">
         <select id="ti-next" onchange="onTrackInfoChange()" style="flex:1; background:transparent; color:#E5E7EB; border:none; font-size:13px; font-family:inherit; padding:2px 0; cursor:pointer;">
@@ -615,22 +378,10 @@
   </div>
 
   <div class="stats-bar">
-    <div class="stat-card">
-      <div class="num good" id="stat-checked">0</div>
-      <div class="label">Cargados</div>
-    </div>
-    <div class="stat-card">
-      <div class="num warn" id="stat-pending">0</div>
-      <div class="label">Pendientes</div>
-    </div>
-    <div class="stat-card">
-      <div class="num danger" id="stat-issues">0</div>
-      <div class="label">Faltan / dañados</div>
-    </div>
-    <div class="stat-card">
-      <div class="num" id="stat-total">0</div>
-      <div class="label">Total items</div>
-    </div>
+    <div class="stat-card"><div class="num good" id="stat-checked">0</div><div class="label">Cargados</div></div>
+    <div class="stat-card"><div class="num warn" id="stat-pending">0</div><div class="label">Pendientes</div></div>
+    <div class="stat-card"><div class="num danger" id="stat-issues">0</div><div class="label">Faltan / dañados</div></div>
+    <div class="stat-card"><div class="num" id="stat-total">0</div><div class="label">Total items</div></div>
   </div>
 
   <div class="actions-bar">
@@ -662,7 +413,6 @@
   </div>
 
   <div id="sections-container"></div>
-
 </div>
 
 <!-- PENDING CHANGES MODAL -->
@@ -673,9 +423,7 @@
       💡 Los workers proponen cambios al inventario (agregar / editar / eliminar items) y el admin los aprueba o rechaza aquí.
     </div>
     <div id="pending-changes-list" style="max-height:60vh; overflow-y:auto; padding-right:4px;"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closePendingChangesModal()">Cerrar</button>
-    </div>
+    <div class="modal-actions"><button class="btn" onclick="closePendingChangesModal()">Cerrar</button></div>
   </div>
 </div>
 
@@ -687,35 +435,25 @@
       💡 Historial de los últimos 100 cambios al inventario (agregar, editar, eliminar, aprobar, rechazar).
     </div>
     <div id="change-log-list" style="max-height:60vh; overflow-y:auto; padding-right:4px;"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeChangeLogModal()">Cerrar</button>
-    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeChangeLogModal()">Cerrar</button></div>
   </div>
 </div>
 
-<!-- TRACKS LIST MODAL (admin) -->
+<!-- TRACKS LIST MODAL -->
 <div class="modal-overlay" id="tracks-modal" onclick="if(event.target===this)closeTrackListModal()">
   <div class="modal">
     <h2>🏁 Pistas / Kartódromos</h2>
     <div style="background:rgba(45,127,249,0.08); border:1px solid rgba(45,127,249,0.3); border-radius:6px; padding:10px 12px; margin-bottom:18px; font-size:12px; color:#94A3B8; line-height:1.5;">
-      💡 Gestiona la lista de kartódromos. Estos aparecen en los dropdowns de "última" y "próxima" pista.
+      💡 Gestiona la lista de kartódromos. Estos aparecen en el dropdown de "próxima" pista.
     </div>
-
     <div style="background:#0A0A0A; border:1px solid #1E293B; border-radius:8px; padding:14px; margin-bottom:14px;">
       <div style="font-family:monospace; font-size:10px; text-transform:uppercase; color:#94A3B8; margin-bottom:10px; letter-spacing:1.5px;">Agregar pista</div>
-      <div class="field">
-        <label>Nombre del kartódromo</label>
-        <input type="text" id="track-new-name" placeholder="Ej: KSE — Sierra Esmeralda" onkeydown="if(event.key==='Enter')addTrack()">
-      </div>
+      <div class="field"><label>Nombre del kartódromo</label><input type="text" id="track-new-name" placeholder="Ej: KSE — Sierra Esmeralda" onkeydown="if(event.key==='Enter')addTrack()"></div>
       <button class="btn primary" style="width:100%;" onclick="addTrack()">+ Agregar pista</button>
     </div>
-
     <div style="margin-bottom:8px; font-family:monospace; font-size:10px; text-transform:uppercase; color:#94A3B8; letter-spacing:1.5px;">Pistas registradas</div>
     <div id="tracks-list"></div>
-
-    <div class="modal-actions">
-      <button class="btn" onclick="closeTrackListModal()">Cerrar</button>
-    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeTrackListModal()">Cerrar</button></div>
   </div>
 </div>
 
@@ -723,21 +461,11 @@
 <div class="modal-overlay" id="item-modal" onclick="if(event.target===this)closeItemModal()">
   <div class="modal">
     <h2 id="item-modal-title">+ Nuevo item</h2>
-    <div class="field">
-      <label>Nombre</label>
-      <input type="text" id="im-name" placeholder="Ej: Mesa portátil">
-    </div>
-    <div class="field">
-      <label>Sección</label>
-      <select id="im-section"></select>
-    </div>
+    <div class="field"><label>Nombre</label><input type="text" id="im-name" placeholder="Ej: Mesa portátil"></div>
+    <div class="field"><label>Sección</label><select id="im-section"></select></div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-      <div class="field">
-        <label>Cantidad</label>
-        <input type="text" id="im-qty" placeholder="Ej: 2">
-      </div>
-      <div class="field">
-        <label>Estado</label>
+      <div class="field"><label>Cantidad</label><input type="text" id="im-qty" placeholder="Ej: 2"></div>
+      <div class="field"><label>Estado</label>
         <select id="im-status">
           <option value="ok">✓ ok</option>
           <option value="falta">⚠️ falta</option>
@@ -746,14 +474,8 @@
         </select>
       </div>
     </div>
-    <div class="field">
-      <label>Última compra (opcional)</label>
-      <input type="date" id="im-lastpurchase">
-    </div>
-    <div class="field">
-      <label>Notas (opcional)</label>
-      <textarea id="im-notes" placeholder="Ej: comprado en Costco Tlalpan"></textarea>
-    </div>
+    <div class="field"><label>Última compra (opcional)</label><input type="date" id="im-lastpurchase"></div>
+    <div class="field"><label>Notas (opcional)</label><textarea id="im-notes" placeholder="Ej: comprado en Costco Tlalpan"></textarea></div>
     <div class="field" id="im-reason-field" style="display:none; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:10px;">
       <label style="color:#F59E0B; font-weight:600;">💭 Razón del cambio (opcional)</label>
       <textarea id="im-reason" placeholder="Ej: porque ahora usamos otra marca / se nos rompió todo / etc..." style="background:transparent;"></textarea>
@@ -771,14 +493,8 @@
 <div class="modal-overlay" id="section-modal" onclick="if(event.target===this)closeSectionModal()">
   <div class="modal">
     <h2 id="section-modal-title">+ Nueva sección</h2>
-    <div class="field">
-      <label>Nombre</label>
-      <input type="text" id="sm-name" placeholder="Ej: Hospitality">
-    </div>
-    <div class="field">
-      <label>Icono (emoji)</label>
-      <input type="text" id="sm-icon" placeholder="🎪" maxlength="4">
-    </div>
+    <div class="field"><label>Nombre</label><input type="text" id="sm-name" placeholder="Ej: Hospitality"></div>
+    <div class="field"><label>Icono (emoji)</label><input type="text" id="sm-icon" placeholder="🎪" maxlength="4"></div>
     <div class="modal-actions">
       <button class="btn danger" id="sm-delete" onclick="deleteCurrentSection()" style="display:none; margin-right:auto;">Eliminar sección</button>
       <button class="btn" onclick="closeSectionModal()">Cancelar</button>
@@ -820,29 +536,25 @@
     </div>
     <div style="background:#0A0A0A; border:1px solid #1E293B; border-radius:8px; padding:14px; margin-bottom:14px;">
       <div style="font-family:monospace; font-size:10px; text-transform:uppercase; color:#94A3B8; margin-bottom:10px; letter-spacing:1.5px;">Agregar miembro</div>
-      <div class="field">
-        <label>Email Google</label>
-        <input type="email" id="team-new-email" placeholder="francisco@gmail.com">
-      </div>
-      <div class="field">
-        <label>Nombre</label>
-        <input type="text" id="team-new-name" placeholder="Francisco">
-      </div>
+      <div class="field"><label>Email Google</label><input type="email" id="team-new-email" placeholder="francisco@gmail.com"></div>
+      <div class="field"><label>Nombre</label><input type="text" id="team-new-name" placeholder="Francisco"></div>
       <button class="btn primary" style="width:100%;" onclick="addTeamMember()">+ Agregar al equipo</button>
     </div>
     <div style="margin-bottom:8px; font-family:monospace; font-size:10px; text-transform:uppercase; color:#94A3B8; letter-spacing:1.5px;">Miembros actuales</div>
     <div id="team-members-list"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeTeamModal()">Cerrar</button>
-    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeTeamModal()">Cerrar</button></div>
   </div>
 </div>
+
 
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+  import {
+    getFirestore, doc, setDoc, getDoc, onSnapshot,
+    collection, getDocs, deleteDoc, updateDoc, writeBatch, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAwceX51t0F7W_Ur67f82tPCqdDB2sJq-s",
@@ -864,40 +576,52 @@
   window.firebaseDoc = doc;
   window.firebaseSetDoc = setDoc;
   window.firebaseGetDoc = getDoc;
+  window.firebaseUpdateDoc = updateDoc;
+  window.firebaseDeleteDoc = deleteDoc;
   window.firebaseOnSnapshot = onSnapshot;
+  window.firebaseCollection = collection;
+  window.firebaseGetDocs = getDocs;
+  window.firebaseWriteBatch = writeBatch;
+  window.firebaseServerTimestamp = serverTimestamp;
   window.firebaseOnAuthStateChanged = onAuthStateChanged;
   window.firebaseReady = true;
   window.dispatchEvent(new Event('firebase-ready'));
 </script>
 
-<script id="seed-data" type="application/json">{"sections":[{"id":"99497648","name":"Mobiliario","icon":"🪑","collapsed":false,"items":[{"id":"bfda8b08","name":"Mesa negra","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"21e25599","name":"Mesa blanca","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"fee73c7a","name":"Base pantalla","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"1c9b8e0a","name":"Sillas","qty":"6","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"fc0e3b8e","name":"Lonas","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"67fcfb27","name":"Lonas con logo","qty":"5","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"88ca9aa5","name":"Banners","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"8595a60a","name":"Carpas","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"18814557","name":"Protector iphone blanco","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"01efa5b3","name":"Bote de basura","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"6c1ab4b1","name":"Paraguas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"1b759238","name":"Hielera","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"d959e61b","name":"Seguridad","icon":"🛡️","collapsed":false,"items":[{"id":"609e5689","name":"Extintores","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"ace0cc0a","name":"Botiquín","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"50f126e7","name":"Estraps","qty":"6","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"785fe577","name":"Pulpo y sinchos","qty":"*+10","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"73589537","name":"Contrapesos","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"1d65dd96","name":"Comunicación","icon":"📡","collapsed":false,"items":[{"id":"5efef686","name":"Radios","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"1aa43054","name":"Starlink","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"319aebd1","name":"iPhone blanco","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"22ec8243","name":"Hub","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"cf81157e","name":"Mychron","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"ead8f0ed","name":"Movilidad","icon":"🚗","collapsed":false,"items":[{"id":"1226e0d7","name":"Patines","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"fa47a140","name":"Eléctrico","icon":"⚡","collapsed":false,"items":[{"id":"6d892cea","name":"Compresora","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"cf83cb48","name":"Power bank","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"290b71ae","name":"Pantalla","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"6a166dcb","name":"Ventilador","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"f7d2400f","name":"Cable pantalla","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b6a41c74","name":"Cable HDMI pantalla","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"0dad44e6","name":"Cargadores patines","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"f5ed7c0c","name":"Cargadores radios","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"4e0d611d","name":"Cargadores laptops","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"bf7caac8","name":"Cargadores celulares","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"c8ae65ad","name":"Baterías osmos 360","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"a586932c","name":"Baterías DJI pocket","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"576f5fa3","name":"Baterías drone","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"143cca56","name":"Batería DJI nano","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b2f96434","name":"Multi contacto","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"fea03c6c","name":"Dispensador de gasolina","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b3d9cab0","name":"Cargador de baterías","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"896ad2d0","name":"Insumos","icon":"🧴","collapsed":false,"items":[{"id":"c8b3ed8c","name":"Papel de baño","qty":"4","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"c4958181","name":"Gel antibacterial","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"558ce7a0","name":"Toallas azules","qty":"4","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"c884a800","name":"Bidones de gasolina","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"7c286b8d","name":"Bidones de agua","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"981c5aa3","name":"Cinchos negros y blancos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b400a003","name":"Cinta gris","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"3f9f666f","name":"Cinta de aislar","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"e62a8fab","name":"Bolsa de basura","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"5023a994","name":"Pilas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"d0c76cfe","name":"Trapos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"0362722b","name":"Carboclean","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"083ebf48","name":"WD-40","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"7e4dcf30","name":"Bebidas/alimento","icon":"🥤","collapsed":false,"items":[{"id":"9408ffc9","name":"Agua","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"37cef67c","name":"Energetizantes","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"eb3b6aca","name":"Refresco","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"e59733f4","name":"Papas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"99a8b947","name":"Chicles","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"9f045671","name":"Chocolates","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"31955865","name":"Hielos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"e17ab0c4","name":"Herramientas","icon":"🔧","collapsed":false,"items":[{"id":"1aaa0e51","name":"Llaves allen","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"fc4a39d2","name":"Desarmadores","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"d28e3480","name":"Atornilladores","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"7d839319","name":"Caja de dados","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"db75c585","name":"Purgador de frenos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"76a5abfe","name":"Reloj carburador","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"3ce242d1","name":"Pop-off carburador","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"eb5a07ad","name":"Laser relación","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"498b543e","name":"Flexometro","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"7030879a","name":"Calibrador vernier","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"8bbe9ce5","name":"Pinzas varias","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"38848758","name":"Escoba","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"19c1a815","name":"Recogedor","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"9c757c6d","name":"Charola","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"82cd912f","name":"Cubetas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"56ef9acb","name":"Refacciones","icon":"🛞","collapsed":false,"items":[{"id":"7a8197fd","name":"Juego de llantas","qty":"2","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"85b1d364","name":"Rines magnesio","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"714ff19c","name":"Rines magnesio/aluminio","qty":"1","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"dad99572","name":"Ejes","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"77da8eb6","name":"Relaciones","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"63bdfdbb","name":"Escape","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"2b8b503d","name":"Piñón","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"8aeb2983","name":"Tornillería rines","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"a4a82ef2","name":"Balatas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"076ea4ca","name":"Cadenas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b2068637","name":"Barilla","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"41d6c7e0","name":"Columna de dirección","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"1eb6922d","name":"Motores (RPG, Refrescado A y Refrescado B)","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"0cbdf0e2","name":"Social media","icon":"📹","collapsed":false,"items":[{"id":"f6906f97","name":"Drone","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"a7329eef","name":"Osmo 360","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"1cc34b9e","name":"DJI Pocket","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"d314c973","name":"DJI Nano","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"b4013cae","name":"Micrófonos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"705ba035","name":"Laptop windows","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"0b928da3","name":"Laptop mac","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]},{"id":"8770c781","name":"Adicionales","icon":"➕","collapsed":false,"items":[{"id":"27b0aa33","name":"Muda de ropa","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"236a121b","name":"Toallas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"cbe1d95b","name":"Petaca de karting","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"5f61f08e","name":"Plumas","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"16130aac","name":"Cuaderno","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"4d182381","name":"Trapos","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""},{"id":"66af9da9","name":"Uniformes","qty":"","status":"ok","checked":false,"lastPurchase":null,"notes":""}]}]}
+<script id="seed-data" type="application/json">{"sections":[{"id":"99497648","name":"Mobiliario","icon":"🪑","order":0,"collapsed":false,"items":[{"id":"bfda8b08","name":"Mesa negra","qty":"1","status":"ok","checked":false,"order":0,"lastPurchase":null,"notes":""},{"id":"21e25599","name":"Mesa blanca","qty":"1","status":"ok","checked":false,"order":1,"lastPurchase":null,"notes":""},{"id":"fee73c7a","name":"Base pantalla","qty":"1","status":"ok","checked":false,"order":2,"lastPurchase":null,"notes":""},{"id":"1c9b8e0a","name":"Sillas","qty":"6","status":"ok","checked":false,"order":3,"lastPurchase":null,"notes":""},{"id":"fc0e3b8e","name":"Lonas","qty":"2","status":"ok","checked":false,"order":4,"lastPurchase":null,"notes":""},{"id":"67fcfb27","name":"Lonas con logo","qty":"5","status":"ok","checked":false,"order":5,"lastPurchase":null,"notes":""},{"id":"88ca9aa5","name":"Banners","qty":"2","status":"ok","checked":false,"order":6,"lastPurchase":null,"notes":""},{"id":"8595a60a","name":"Carpas","qty":"2","status":"ok","checked":false,"order":7,"lastPurchase":null,"notes":""},{"id":"18814557","name":"Protector iphone blanco","qty":"","status":"ok","checked":false,"order":8,"lastPurchase":null,"notes":""},{"id":"01efa5b3","name":"Bote de basura","qty":"","status":"ok","checked":false,"order":9,"lastPurchase":null,"notes":""},{"id":"6c1ab4b1","name":"Paraguas","qty":"","status":"ok","checked":false,"order":10,"lastPurchase":null,"notes":""},{"id":"1b759238","name":"Hielera","qty":"","status":"ok","checked":false,"order":11,"lastPurchase":null,"notes":""}]},{"id":"d959e61b","name":"Seguridad","icon":"🛡️","order":1,"collapsed":false,"items":[{"id":"609e5689","name":"Extintores","qty":"2","status":"ok","checked":false,"order":0,"lastPurchase":null,"notes":""},{"id":"ace0cc0a","name":"Botiquín","qty":"1","status":"ok","checked":false,"order":1,"lastPurchase":null,"notes":""},{"id":"50f126e7","name":"Estraps","qty":"6","status":"ok","checked":false,"order":2,"lastPurchase":null,"notes":""},{"id":"785fe577","name":"Pulpo y sinchos","qty":"*+10","status":"ok","checked":false,"order":3,"lastPurchase":null,"notes":""},{"id":"73589537","name":"Contrapesos","qty":"2","status":"ok","checked":false,"order":4,"lastPurchase":null,"notes":""}]}]}
 </script>
 
 <script>
 // ============================================================
-// LAPKR PISTA — App
+// LAPKR PISTA — App (subcollections architecture)
 // ============================================================
+//
+// FIRESTORE STRUCTURE:
+//   /lapkr-pista/shared                          ← workspace metadata (team, ownerId, trackInfo, tracks)
+//   /lapkr-pista/shared/sections/{sectionId}     ← one doc per section { id, name, icon, order, collapsed }
+//   /lapkr-pista/shared/items/{itemId}           ← one doc per item { id, sectionId, name, qty, status, checked, order, lastPurchase, notes }
+//   /lapkr-pista/shared/pendingChanges/{cId}     ← one doc per pending change
+//   /lapkr-pista/shared/changeLog/{entryId}      ← one doc per log entry
+//
+// This means two devices editing different items at the same time never collide.
 
 const SEED_DATA = JSON.parse(document.getElementById('seed-data').textContent);
 
-// State
 const state = {
-  sections: [],
-  trackInfo: { last: '', next: '' },
+  sections: [],           // [{id,name,icon,order,collapsed,items:[...]}]   (denormalized for render)
+  trackInfo: { next: '' },
   tracks: ['KBR — Bosque Real', 'KSE — Sierra Esmeralda'],
   filter: 'all',
   currentItemId: null,
   currentSectionId: null,
   team: {},
-  pendingChanges: [],  // propuestas de workers esperando aprobación
-  changeLog: []        // bitácora histórica de cambios
+  pendingChanges: [],
+  changeLog: []
 };
 
-let firestoreUnsubscribe = null;
+let unsubs = [];           // active onSnapshot unsubscribers
 let cloudReady = false;
-let saveTimer = null;
-let suppressSave = false;
-
+let suppressLocalUpdate = false;
 window.sessionIdPista = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
 
 // ============================================================
@@ -967,11 +691,8 @@ function initAuthFlow() {
 
   document.getElementById('google-signin-btn').addEventListener('click', async () => {
     document.getElementById('login-error').textContent = '';
-    try {
-      await window.firebaseSignIn();
-    } catch (e) {
-      document.getElementById('login-error').textContent = e.message;
-    }
+    try { await window.firebaseSignIn(); }
+    catch (e) { document.getElementById('login-error').textContent = e.message; }
   });
 }
 
@@ -984,24 +705,11 @@ async function finishLogin(user) {
   }
   showApp();
   setSyncStatus('syncing', 'Cargando...');
-  subscribeToFirestore();
-  await new Promise(resolve => {
-    const wait = () => {
-      if (cloudReady) resolve();
-      else setTimeout(wait, 100);
-    };
-    setTimeout(wait, 200);
-  });
-  // If still no sections after initial load, seed
-  if (state.sections.length === 0) {
-    if (window.currentUserRole === 'admin') {
-      console.log('[Pista] Seeding initial data');
-      suppressSave = true;
-      state.sections = JSON.parse(JSON.stringify(SEED_DATA.sections));
-      suppressSave = false;
-      render();
-      scheduleSave();
-    }
+  await subscribeToFirestore();
+  // If still no sections after initial load, seed (admin only)
+  if (state.sections.length === 0 && window.currentUserRole === 'admin') {
+    console.log('[Pista] Seeding initial data');
+    await seedInitialData();
   } else {
     render();
   }
@@ -1009,12 +717,13 @@ async function finishLogin(user) {
 
 function logout() {
   if (!confirm('¿Cerrar sesión?')) return;
-  if (firestoreUnsubscribe) firestoreUnsubscribe();
+  unsubs.forEach(u => { try { u(); } catch(e){} });
+  unsubs = [];
   window.firebaseSignOut().then(() => location.reload());
 }
 
 // ============================================================
-// FIRESTORE SYNC
+// FIRESTORE — SUBCOLLECTIONS SYNC
 // ============================================================
 function setSyncStatus(status, text) {
   const pill = document.getElementById('sync-pill');
@@ -1023,99 +732,274 @@ function setSyncStatus(status, text) {
   document.getElementById('sync-text').textContent = text || 'Sincronizado';
 }
 
-function scheduleSave() {
-  if (suppressSave) return;
-  if (!cloudReady) return;
-  if (saveTimer) clearTimeout(saveTimer);
-  setSyncStatus('syncing', 'Guardando...');
-  saveTimer = setTimeout(saveToFirestore, 600);
+function workspaceRef() {
+  return window.firebaseDoc(window.firebaseDb, 'lapkr-pista', 'shared');
+}
+function sectionsCol() {
+  return window.firebaseCollection(window.firebaseDb, 'lapkr-pista', 'shared', 'sections');
+}
+function itemsCol() {
+  return window.firebaseCollection(window.firebaseDb, 'lapkr-pista', 'shared', 'items');
+}
+function pendingCol() {
+  return window.firebaseCollection(window.firebaseDb, 'lapkr-pista', 'shared', 'pendingChanges');
+}
+function logCol() {
+  return window.firebaseCollection(window.firebaseDb, 'lapkr-pista', 'shared', 'changeLog');
+}
+function sectionDoc(id) {
+  return window.firebaseDoc(window.firebaseDb, 'lapkr-pista', 'shared', 'sections', id);
+}
+function itemDoc(id) {
+  return window.firebaseDoc(window.firebaseDb, 'lapkr-pista', 'shared', 'items', id);
+}
+function pendingDoc(id) {
+  return window.firebaseDoc(window.firebaseDb, 'lapkr-pista', 'shared', 'pendingChanges', id);
+}
+function logDoc(id) {
+  return window.firebaseDoc(window.firebaseDb, 'lapkr-pista', 'shared', 'changeLog', id);
 }
 
-async function saveToFirestore() {
-  if (!cloudReady || !window.currentUser) return;
-  try {
-    const docRef = window.firebaseDoc(window.firebaseDb, 'lapkr-pista', 'shared');
-    const payload = {
-      sections: state.sections,
-      trackInfo: state.trackInfo,
-      tracks: state.tracks,
-      pendingChanges: state.pendingChanges || [],
-      changeLog: (state.changeLog || []).slice(0, 200),  // cap to last 200 entries
-      _lastModifiedSession: window.sessionIdPista,
-      _lastModifiedBy: window.currentUser.uid,
-      _lastModifiedByName: window.currentUserName || 'Unknown',
-      _lastModifiedAt: new Date().toISOString(),
-      team: state.team,
-      ownerId: window.workspaceOwnerId
-    };
-    await window.firebaseSetDoc(docRef, payload, { merge: true });
+// State buckets coming from snapshots
+let sectionsMap = {};   // { sectionId: sectionDocData }
+let itemsMap = {};      // { itemId: itemDocData }
+let pendingMap = {};    // { changeId: changeDocData }
+let logMap = {};        // { entryId: logDocData }
+
+function rebuildStateFromMaps() {
+  // Build sections array sorted by order, with their items nested (also sorted)
+  const sections = Object.values(sectionsMap).map(s => ({
+    id: s.id,
+    name: s.name,
+    icon: s.icon,
+    order: s.order != null ? s.order : 999,
+    collapsed: !!s.collapsed,
+    items: []
+  }));
+  // Bucket items by sectionId
+  Object.values(itemsMap).forEach(it => {
+    const sec = sections.find(s => s.id === it.sectionId);
+    if (!sec) return;
+    sec.items.push({
+      id: it.id,
+      name: it.name || '',
+      qty: it.qty || '',
+      status: it.status || 'ok',
+      checked: !!it.checked,
+      order: it.order != null ? it.order : 999,
+      lastPurchase: it.lastPurchase || null,
+      notes: it.notes || ''
+    });
+  });
+  sections.forEach(s => s.items.sort((a,b) => (a.order||0) - (b.order||0)));
+  sections.sort((a,b) => (a.order||0) - (b.order||0));
+  state.sections = sections;
+  state.pendingChanges = Object.values(pendingMap).sort((a,b) => (b.proposedAt||'').localeCompare(a.proposedAt||''));
+  state.changeLog = Object.values(logMap).sort((a,b) => (b.timestamp||'').localeCompare(a.timestamp||''));
+}
+
+async function subscribeToFirestore() {
+  // Workspace doc: team + trackInfo + tracks + ownerId
+  const wsUnsub = window.firebaseOnSnapshot(workspaceRef(), (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.trackInfo) state.trackInfo = data.trackInfo;
+      if (data.tracks) state.tracks = data.tracks;
+      if (data.team) state.team = data.team;
+    }
+    cloudReady = true;
+    render();
     setSyncStatus('', 'Sincronizado');
-  } catch (e) {
-    console.error('[Pista] Save failed:', e);
+  }, (err) => {
+    console.error('[Pista] Workspace snapshot error:', err);
     setSyncStatus('error', 'Error sync');
+  });
+  unsubs.push(wsUnsub);
+
+  const sUnsub = window.firebaseOnSnapshot(sectionsCol(), (snap) => {
+    snap.docChanges().forEach(ch => {
+      const d = ch.doc.data();
+      if (ch.type === 'removed') delete sectionsMap[ch.doc.id];
+      else sectionsMap[ch.doc.id] = { ...d, id: ch.doc.id };
+    });
+    rebuildStateFromMaps();
+    render();
+  }, (err) => console.error('[Pista] Sections error:', err));
+  unsubs.push(sUnsub);
+
+  const iUnsub = window.firebaseOnSnapshot(itemsCol(), (snap) => {
+    snap.docChanges().forEach(ch => {
+      const d = ch.doc.data();
+      if (ch.type === 'removed') delete itemsMap[ch.doc.id];
+      else itemsMap[ch.doc.id] = { ...d, id: ch.doc.id };
+    });
+    rebuildStateFromMaps();
+    render();
+  }, (err) => console.error('[Pista] Items error:', err));
+  unsubs.push(iUnsub);
+
+  const pUnsub = window.firebaseOnSnapshot(pendingCol(), (snap) => {
+    snap.docChanges().forEach(ch => {
+      const d = ch.doc.data();
+      if (ch.type === 'removed') delete pendingMap[ch.doc.id];
+      else pendingMap[ch.doc.id] = { ...d, id: ch.doc.id };
+    });
+    rebuildStateFromMaps();
+    render();
+  }, (err) => console.error('[Pista] Pending error:', err));
+  unsubs.push(pUnsub);
+
+  const lUnsub = window.firebaseOnSnapshot(logCol(), (snap) => {
+    snap.docChanges().forEach(ch => {
+      const d = ch.doc.data();
+      if (ch.type === 'removed') delete logMap[ch.doc.id];
+      else logMap[ch.doc.id] = { ...d, id: ch.doc.id };
+    });
+    rebuildStateFromMaps();
+    render();
+  }, (err) => console.error('[Pista] Log error:', err));
+  unsubs.push(lUnsub);
+
+  // Wait briefly for first snapshots
+  await new Promise(r => setTimeout(r, 700));
+}
+
+async function seedInitialData() {
+  try {
+    // Seed workspace if missing
+    const wsSnap = await window.firebaseGetDoc(workspaceRef());
+    if (!wsSnap.exists()) {
+      await window.firebaseSetDoc(workspaceRef(), {
+        ownerId: window.workspaceOwnerId,
+        team: {},
+        trackInfo: { next: '' },
+        tracks: ['KBR — Bosque Real', 'KSE — Sierra Esmeralda'],
+        createdAt: new Date().toISOString()
+      });
+    }
+    // Seed sections + items
+    const batch = window.firebaseWriteBatch(window.firebaseDb);
+    SEED_DATA.sections.forEach((s, sIdx) => {
+      batch.set(sectionDoc(s.id), {
+        id: s.id, name: s.name, icon: s.icon,
+        order: s.order != null ? s.order : sIdx,
+        collapsed: !!s.collapsed
+      });
+      (s.items || []).forEach((it, iIdx) => {
+        batch.set(itemDoc(it.id), {
+          id: it.id,
+          sectionId: s.id,
+          name: it.name, qty: it.qty || '',
+          status: it.status || 'ok', checked: !!it.checked,
+          order: it.order != null ? it.order : iIdx,
+          lastPurchase: it.lastPurchase || null, notes: it.notes || ''
+        });
+      });
+    });
+    await batch.commit();
+    toast('Datos iniciales cargados ✓');
+  } catch (e) {
+    console.error('[Pista] Seed failed:', e);
+    toast('Error sembrando datos: ' + e.message);
   }
 }
 
-function subscribeToFirestore() {
-  if (!window.firebaseDb) return;
-  const docRef = window.firebaseDoc(window.firebaseDb, 'lapkr-pista', 'shared');
-  if (firestoreUnsubscribe) firestoreUnsubscribe();
-  firestoreUnsubscribe = window.firebaseOnSnapshot(docRef, (snap) => {
-    if (!snap.exists()) {
-      cloudReady = true;
-      setSyncStatus('', 'Listo (sin datos)');
-      return;
-    }
-    const data = snap.data();
-    if (data._lastModifiedSession === window.sessionIdPista) {
-      cloudReady = true;
-      setSyncStatus('', 'Sincronizado');
-      return;
-    }
-    suppressSave = true;
-    if (data.sections) state.sections = data.sections;
-    if (data.trackInfo) state.trackInfo = data.trackInfo;
-    if (data.tracks) state.tracks = data.tracks;
-    if (data.team) state.team = data.team;
-    state.pendingChanges = Array.isArray(data.pendingChanges) ? data.pendingChanges : [];
-    state.changeLog = Array.isArray(data.changeLog) ? data.changeLog : [];
-    suppressSave = false;
-    cloudReady = true;
-    render();
-    setSyncStatus('syncing', 'Actualizando...');
-    setTimeout(() => setSyncStatus('', 'Sincronizado'), 400);
-  }, (err) => {
-    console.error('[Pista] Snapshot error:', err);
+// ============================================================
+// GRANULAR WRITES — these are the per-item / per-section ops
+// ============================================================
+async function saveItemDoc(itemData) {
+  // itemData must include id and sectionId
+  try {
+    setSyncStatus('syncing', 'Guardando...');
+    await window.firebaseSetDoc(itemDoc(itemData.id), itemData, { merge: true });
+    setSyncStatus('', 'Sincronizado');
+  } catch (e) {
+    console.error('[Pista] saveItemDoc failed:', e);
     setSyncStatus('error', 'Error sync');
-  });
+  }
+}
+async function deleteItemDoc(itemId) {
+  try {
+    setSyncStatus('syncing', 'Guardando...');
+    await window.firebaseDeleteDoc(itemDoc(itemId));
+    setSyncStatus('', 'Sincronizado');
+  } catch (e) {
+    console.error('[Pista] deleteItemDoc failed:', e);
+    setSyncStatus('error', 'Error sync');
+  }
+}
+async function saveSectionDoc(secData) {
+  try {
+    setSyncStatus('syncing', 'Guardando...');
+    await window.firebaseSetDoc(sectionDoc(secData.id), secData, { merge: true });
+    setSyncStatus('', 'Sincronizado');
+  } catch (e) {
+    console.error('[Pista] saveSectionDoc failed:', e);
+    setSyncStatus('error', 'Error sync');
+  }
+}
+async function deleteSectionDoc(secId) {
+  // Also delete all items belonging to this section
+  try {
+    setSyncStatus('syncing', 'Guardando...');
+    const sec = state.sections.find(s => s.id === secId);
+    const batch = window.firebaseWriteBatch(window.firebaseDb);
+    batch.delete(sectionDoc(secId));
+    if (sec) sec.items.forEach(it => batch.delete(itemDoc(it.id)));
+    await batch.commit();
+    setSyncStatus('', 'Sincronizado');
+  } catch (e) {
+    console.error('[Pista] deleteSectionDoc failed:', e);
+    setSyncStatus('error', 'Error sync');
+  }
+}
+async function savePendingDoc(change) {
+  try {
+    await window.firebaseSetDoc(pendingDoc(change.id), change, { merge: true });
+  } catch (e) {
+    console.error('[Pista] savePending failed:', e);
+  }
+}
+async function deletePendingDoc(id) {
+  try { await window.firebaseDeleteDoc(pendingDoc(id)); }
+  catch (e) { console.error('[Pista] deletePending failed:', e); }
+}
+async function saveLogDoc(entry) {
+  try { await window.firebaseSetDoc(logDoc(entry.id), entry); }
+  catch (e) { console.error('[Pista] saveLog failed:', e); }
+}
+async function saveWorkspaceDoc(patch) {
+  try {
+    setSyncStatus('syncing', 'Guardando...');
+    await window.firebaseSetDoc(workspaceRef(), patch, { merge: true });
+    setSyncStatus('', 'Sincronizado');
+  } catch (e) {
+    console.error('[Pista] saveWorkspace failed:', e);
+    setSyncStatus('error', 'Error sync');
+  }
 }
 
 // ============================================================
 // UTILITIES
 // ============================================================
-function uid(n = 8) {
-  return Math.random().toString(36).substring(2, 2 + n);
-}
-
+function uid(n = 8) { return Math.random().toString(36).substring(2, 2 + n); }
 function escapeHTML(s) {
   if (s == null) return '';
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
 function fmtDate(d) {
   if (!d) return '';
   const dt = new Date(d);
   if (isNaN(dt)) return d;
   return dt.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
 }
-
 function toast(msg) {
   const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
+  t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 2700);
 }
+function isAdmin() { return window.currentUserRole === 'admin'; }
 
 // ============================================================
 // RENDER
@@ -1130,7 +1014,6 @@ function render() {
 
 function applyRoleUI() {
   const admin = isAdmin();
-  // Hide section management and reset for workers
   const sectionBtn = document.getElementById('btn-add-section');
   if (sectionBtn) sectionBtn.style.display = admin ? '' : 'none';
   const resetBtn = document.getElementById('btn-reset');
@@ -1143,16 +1026,11 @@ function renderPendingBanner() {
   const bannerSubtitle = document.getElementById('pending-banner-subtitle');
   const pendingBtn = document.getElementById('btn-pending-changes');
   const countBadge = document.getElementById('pending-count-badge');
-
   const changes = state.pendingChanges || [];
   const count = changes.length;
-
   if (countBadge) countBadge.textContent = count;
-
-  // Show button & banner based on role and count
   const admin = isAdmin();
   const myProposals = changes.filter(c => c.proposedBy === (window.currentUserName || 'Worker')).length;
-
   if (admin && count > 0) {
     if (banner) banner.style.display = '';
     if (bannerTitle) bannerTitle.textContent = `${count} cambio${count > 1 ? 's' : ''} pendiente${count > 1 ? 's' : ''} de tu aprobación`;
@@ -1170,37 +1048,21 @@ function renderPendingBanner() {
 }
 
 function renderTrackInfo() {
-  // Populate both dropdowns with the current tracks list
-  const lastSel = document.getElementById('ti-last');
   const nextSel = document.getElementById('ti-next');
-  if (!lastSel || !nextSel) return;
-
+  if (!nextSel) return;
   const optionsHTML = '<option value="">— Seleccionar —</option>' +
     (state.tracks || []).map(t => `<option value="${escapeHTML(t)}">${escapeHTML(t)}</option>`).join('');
-
-  // Preserve current selection
-  const lastVal = state.trackInfo.last || '';
   const nextVal = state.trackInfo.next || '';
-
-  lastSel.innerHTML = optionsHTML;
   nextSel.innerHTML = optionsHTML;
-
-  // If the stored value isn't in the list anymore (got removed), add it as a one-off option
-  if (lastVal && !(state.tracks || []).includes(lastVal)) {
-    lastSel.innerHTML += `<option value="${escapeHTML(lastVal)}">${escapeHTML(lastVal)} (no listada)</option>`;
-  }
   if (nextVal && !(state.tracks || []).includes(nextVal)) {
     nextSel.innerHTML += `<option value="${escapeHTML(nextVal)}">${escapeHTML(nextVal)} (no listada)</option>`;
   }
-
-  lastSel.value = lastVal;
   nextSel.value = nextVal;
 }
 
 function onTrackInfoChange() {
-  state.trackInfo.last = document.getElementById('ti-last').value;
   state.trackInfo.next = document.getElementById('ti-next').value;
-  scheduleSave();
+  saveWorkspaceDoc({ trackInfo: state.trackInfo });
 }
 
 function renderStats() {
@@ -1212,21 +1074,21 @@ function renderStats() {
       if (!i.checked && (i.status === 'falta' || i.status === 'dañado' || i.status === 'agotado')) issues++;
     });
   });
-  const pending = total - checked;
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-checked').textContent = checked;
-  document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('stat-pending').textContent = total - checked;
   document.getElementById('stat-issues').textContent = issues;
 }
 
 function renderSections() {
   const container = document.getElementById('sections-container');
+  const admin = isAdmin();
   if (state.sections.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="emoji">📦</div>No hay secciones. <br><br><button class="btn primary" onclick="openAddSectionModal()">+ Agregar sección</button></div>';
+    container.innerHTML = '<div class="empty-state"><div class="emoji">📦</div>No hay secciones. <br><br>' +
+      (admin ? '<button class="btn primary" onclick="openAddSectionModal()">+ Agregar sección</button>' : 'Espera a que el admin configure el checklist.') + '</div>';
     return;
   }
-
-  container.innerHTML = state.sections.map(section => {
+  container.innerHTML = state.sections.map((section, sIdx) => {
     const filteredItems = section.items.filter(item => {
       if (state.filter === 'all') return true;
       if (state.filter === 'pending') return !item.checked;
@@ -1234,24 +1096,33 @@ function renderSections() {
       if (state.filter === 'issues') return !item.checked && (item.status === 'falta' || item.status === 'dañado' || item.status === 'agotado');
       return true;
     });
-
     if (state.filter !== 'all' && filteredItems.length === 0) return '';
-
     const totalItems = section.items.length;
     const checkedItems = section.items.filter(i => i.checked).length;
     const progressClass = checkedItems === totalItems && totalItems > 0 ? 'done' : '';
+    const sectionFirst = sIdx === 0;
+    const sectionLast = sIdx === state.sections.length - 1;
+    const reorderSectionHTML = admin ? `
+      <div class="reorder-btns" onclick="event.stopPropagation();" title="Reordenar sección">
+        <button class="reorder-btn" onclick="event.stopPropagation(); moveSection('${section.id}', -1)" ${sectionFirst ? 'disabled' : ''} title="Subir">▲</button>
+        <button class="reorder-btn" onclick="event.stopPropagation(); moveSection('${section.id}', 1)" ${sectionLast ? 'disabled' : ''} title="Bajar">▼</button>
+      </div>` : '';
 
     return `
       <div class="section ${section.collapsed ? 'collapsed' : ''}" data-section-id="${section.id}">
         <div class="section-header" onclick="toggleSection('${section.id}')">
+          ${reorderSectionHTML}
           <div class="section-icon">${escapeHTML(section.icon)}</div>
           <div class="section-title">${escapeHTML(section.name)}</div>
           <div class="section-progress"><span class="${progressClass}">${checkedItems}</span>/${totalItems}</div>
-          <button class="item-menu" onclick="event.stopPropagation(); openEditSectionModal('${section.id}')" title="Editar sección">⚙️</button>
+          ${admin ? `<button class="item-menu" onclick="event.stopPropagation(); openEditSectionModal('${section.id}')" title="Editar sección">⚙️</button>` : ''}
           <span class="section-toggle">▼</span>
         </div>
         <div class="section-items">
-          ${filteredItems.length === 0 ? '<div class="empty-state" style="padding: 20px;"><div style="font-size: 12px;">Sin items en este filtro</div></div>' : filteredItems.map(item => {
+          ${filteredItems.length === 0 ? '<div class="empty-state" style="padding: 20px;"><div style="font-size: 12px;">Sin items en este filtro</div></div>' : filteredItems.map((item, iIdx) => {
+            const fullIdx = section.items.findIndex(x => x.id === item.id);
+            const itemFirst = fullIdx === 0;
+            const itemLast = fullIdx === section.items.length - 1;
             const pending = getPendingForItem(item.id);
             const pendingBadge = pending ? `
               <div style="display:flex; align-items:center; gap:6px; padding:4px 8px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.4); border-radius:6px; margin-top:6px; cursor:pointer;" onclick="event.stopPropagation(); openPendingChangesModal();">
@@ -1259,8 +1130,14 @@ function renderSections() {
                 <span style="font-size:10px; color:#F59E0B; font-weight:600;">${pending.kind === 'remove' ? 'Eliminación' : 'Edición'} propuesta por ${escapeHTML(pending.proposedBy)}</span>
               </div>
             ` : '';
+            const reorderItemHTML = state.filter === 'all' ? `
+              <div class="reorder-btns" onclick="event.stopPropagation();" title="Reordenar item">
+                <button class="reorder-btn" onclick="event.stopPropagation(); moveItem('${section.id}', '${item.id}', -1)" ${itemFirst ? 'disabled' : ''}>▲</button>
+                <button class="reorder-btn" onclick="event.stopPropagation(); moveItem('${section.id}', '${item.id}', 1)" ${itemLast ? 'disabled' : ''}>▼</button>
+              </div>` : '';
             return `
             <div class="item ${item.checked ? 'checked' : ''}" data-item-id="${item.id}">
+              ${reorderItemHTML}
               <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${section.id}', '${item.id}')"></div>
               <div class="item-body" onclick="openEditItemModal('${section.id}', '${item.id}')">
                 <div class="item-name">${escapeHTML(item.name)}</div>
@@ -1295,6 +1172,51 @@ function renderSections() {
 }
 
 // ============================================================
+// REORDER OPERATIONS
+// ============================================================
+async function moveSection(sectionId, delta) {
+  if (!isAdmin()) { toast('Solo admin puede reordenar secciones'); return; }
+  const sorted = [...state.sections].sort((a,b) => (a.order||0) - (b.order||0));
+  const idx = sorted.findIndex(s => s.id === sectionId);
+  if (idx < 0) return;
+  const newIdx = idx + delta;
+  if (newIdx < 0 || newIdx >= sorted.length) return;
+  // Swap and re-number
+  [sorted[idx], sorted[newIdx]] = [sorted[newIdx], sorted[idx]];
+  const batch = window.firebaseWriteBatch(window.firebaseDb);
+  sorted.forEach((s, i) => batch.update(sectionDoc(s.id), { order: i }));
+  try {
+    setSyncStatus('syncing', 'Reordenando...');
+    await batch.commit();
+    setSyncStatus('', 'Sincronizado');
+  } catch (e) {
+    console.error('[Pista] Section reorder failed:', e);
+    setSyncStatus('error', 'Error sync');
+  }
+}
+
+async function moveItem(sectionId, itemId, delta) {
+  const sec = state.sections.find(s => s.id === sectionId);
+  if (!sec) return;
+  const sorted = [...sec.items].sort((a,b) => (a.order||0) - (b.order||0));
+  const idx = sorted.findIndex(i => i.id === itemId);
+  if (idx < 0) return;
+  const newIdx = idx + delta;
+  if (newIdx < 0 || newIdx >= sorted.length) return;
+  [sorted[idx], sorted[newIdx]] = [sorted[newIdx], sorted[idx]];
+  const batch = window.firebaseWriteBatch(window.firebaseDb);
+  sorted.forEach((it, i) => batch.update(itemDoc(it.id), { order: i }));
+  try {
+    setSyncStatus('syncing', 'Reordenando...');
+    await batch.commit();
+    setSyncStatus('', 'Sincronizado');
+  } catch (e) {
+    console.error('[Pista] Item reorder failed:', e);
+    setSyncStatus('error', 'Error sync');
+  }
+}
+
+// ============================================================
 // FILTER & TOGGLE
 // ============================================================
 function setFilter(f) {
@@ -1310,7 +1232,7 @@ function toggleSection(sectionId) {
   if (!s) return;
   s.collapsed = !s.collapsed;
   renderSections();
-  scheduleSave();
+  saveSectionDoc({ id: sectionId, collapsed: s.collapsed });
 }
 
 function toggleItem(sectionId, itemId) {
@@ -1320,7 +1242,7 @@ function toggleItem(sectionId, itemId) {
   if (!item) return;
   item.checked = !item.checked;
   render();
-  scheduleSave();
+  saveItemDoc({ id: itemId, sectionId, checked: item.checked });
 }
 
 function updateItemField(sectionId, itemId, field, value) {
@@ -1330,29 +1252,27 @@ function updateItemField(sectionId, itemId, field, value) {
   if (!item) return;
   item[field] = value;
   render();
-  scheduleSave();
+  const patch = { id: itemId, sectionId };
+  patch[field] = value;
+  saveItemDoc(patch);
 }
 
 // ============================================================
 // ITEM MODAL
 // ============================================================
 function applyRoleUIToItemModal(mode) {
-  // mode: 'add' | 'edit'
   const reasonField = document.getElementById('im-reason-field');
   const reasonInput = document.getElementById('im-reason');
   const saveBtn = document.getElementById('im-save');
   const deleteBtn = document.getElementById('im-delete');
   const title = document.getElementById('item-modal-title');
-
   if (reasonInput) reasonInput.value = '';
-
   if (isAdmin()) {
     if (reasonField) reasonField.style.display = 'none';
     if (saveBtn) saveBtn.textContent = 'Guardar';
     if (deleteBtn) deleteBtn.textContent = 'Eliminar';
     if (title) title.textContent = mode === 'edit' ? 'Editar item' : '+ Nuevo item';
   } else {
-    // Worker: show reason field, label buttons as proposals
     if (reasonField) reasonField.style.display = '';
     if (saveBtn) saveBtn.textContent = mode === 'edit' ? '📋 Proponer cambio' : '📋 Proponer agregar';
     if (deleteBtn) deleteBtn.textContent = '📋 Proponer eliminar';
@@ -1408,66 +1328,45 @@ function closeItemModal() {
   document.getElementById('item-modal').classList.remove('open');
 }
 
-function isAdmin() {
-  return window.currentUserRole === 'admin';
-}
-
-function logChange(action, summary, details) {
-  if (!state.changeLog) state.changeLog = [];
-  state.changeLog.unshift({
+async function logChange(action, summary, details) {
+  const entry = {
     id: 'log_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
     timestamp: new Date().toISOString(),
     user: window.currentUserName || 'Unknown',
-    action,   // 'add' | 'edit' | 'remove' | 'approve' | 'reject'
-    summary,  // brief text
-    details   // optional object with old/new values
-  });
-  // Cap to last 200 entries
-  if (state.changeLog.length > 200) state.changeLog = state.changeLog.slice(0, 200);
+    action, summary, details: details || null
+  };
+  await saveLogDoc(entry);
 }
 
-function findItemById(sectionId, itemId) {
-  const s = state.sections.find(x => x.id === sectionId);
-  if (!s) return null;
-  return s.items.find(i => i.id === itemId) || null;
-}
-
-// Check if an item already has a pending proposal
 function getPendingForItem(itemId) {
   if (!Array.isArray(state.pendingChanges)) return null;
   return state.pendingChanges.find(c => c.itemId === itemId) || null;
 }
 
-function getPendingForSection(sectionId) {
-  if (!Array.isArray(state.pendingChanges)) return [];
-  return state.pendingChanges.filter(c => c.sectionId === sectionId && !c.itemId);
-}
-
-function proposeChange(change) {
-  if (!Array.isArray(state.pendingChanges)) state.pendingChanges = [];
-  // If editing/deleting same item, replace previous proposal
+async function proposeChange(change) {
+  // Replace any existing proposal for same item
   if (change.itemId) {
-    state.pendingChanges = state.pendingChanges.filter(c => c.itemId !== change.itemId);
+    const existing = (state.pendingChanges || []).filter(c => c.itemId === change.itemId);
+    for (const ex of existing) await deletePendingDoc(ex.id);
   }
-  state.pendingChanges.push({
+  const fullChange = {
     id: 'pc_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
     proposedAt: new Date().toISOString(),
     proposedBy: window.currentUserName || 'Worker',
     ...change
-  });
-  logChange('propose', `${window.currentUserName || 'Worker'} propuso: ${change.summary || change.kind}`, change);
+  };
+  await savePendingDoc(fullChange);
+  await logChange('propose', `${window.currentUserName || 'Worker'} propuso: ${change.summary || change.kind}`, change);
 }
 
-function saveItem() {
+async function saveItem() {
   const name = document.getElementById('im-name').value.trim();
   if (!name) { toast('Falta nombre'); return; }
   const sectionId = document.getElementById('im-section').value;
   const targetSection = state.sections.find(s => s.id === sectionId);
   if (!targetSection) { toast('Sección inválida'); return; }
-
   const reasonEl = document.getElementById('im-reason');
   const reason = reasonEl ? reasonEl.value.trim() : '';
-
   const itemData = {
     name,
     qty: document.getElementById('im-qty').value.trim(),
@@ -1476,169 +1375,118 @@ function saveItem() {
     notes: document.getElementById('im-notes').value.trim()
   };
 
-  // ===== ADMIN: apply directly =====
   if (isAdmin()) {
     if (state.currentItemId) {
-      // Edit existing
       const currentSection = state.sections.find(s => s.id === state.currentSectionId);
       const item = currentSection?.items.find(i => i.id === state.currentItemId);
       if (item) {
         const oldName = item.name;
-        Object.assign(item, itemData);
-        if (state.currentSectionId !== sectionId) {
-          currentSection.items = currentSection.items.filter(i => i.id !== state.currentItemId);
-          targetSection.items.push(item);
-        }
-        logChange('edit', `Editó "${oldName}" → "${name}"`, { itemId: state.currentItemId, before: { name: oldName }, after: itemData });
+        await saveItemDoc({ id: state.currentItemId, sectionId, ...itemData });
+        await logChange('edit', `Editó "${oldName}" → "${name}"`, { itemId: state.currentItemId, before: { name: oldName }, after: itemData });
       }
     } else {
-      // New
-      const newItem = { id: uid(), checked: false, ...itemData };
-      targetSection.items.push(newItem);
-      logChange('add', `Agregó "${name}" en ${targetSection.icon} ${targetSection.name}`, { sectionId, after: itemData });
+      const newId = uid();
+      const order = targetSection.items.length;
+      await saveItemDoc({ id: newId, sectionId, checked: false, order, ...itemData });
+      await logChange('add', `Agregó "${name}" en ${targetSection.icon} ${targetSection.name}`, { sectionId, after: itemData });
     }
-    render();
-    scheduleSave();
     closeItemModal();
     toast('Guardado ✓');
     return;
   }
 
-  // ===== MEMBER: propose change =====
+  // Worker: propose
   if (state.currentItemId) {
-    // Worker is proposing edit on existing item
     const currentSection = state.sections.find(s => s.id === state.currentSectionId);
     const item = currentSection?.items.find(i => i.id === state.currentItemId);
     if (!item) { toast('Item no encontrado'); return; }
-
-    proposeChange({
-      kind: 'edit',
-      sectionId,
-      originalSectionId: state.currentSectionId,
-      itemId: state.currentItemId,
-      itemName: item.name,
-      before: {
-        name: item.name, qty: item.qty, status: item.status,
-        lastPurchase: item.lastPurchase, notes: item.notes
-      },
-      after: itemData,
-      reason,
+    await proposeChange({
+      kind: 'edit', sectionId, originalSectionId: state.currentSectionId,
+      itemId: state.currentItemId, itemName: item.name,
+      before: { name: item.name, qty: item.qty, status: item.status, lastPurchase: item.lastPurchase, notes: item.notes },
+      after: itemData, reason,
       summary: `Editar "${item.name}"`
     });
-    scheduleSave();
     closeItemModal();
-    render();
     toast('📋 Cambio propuesto, esperando aprobación de admin');
   } else {
-    // Worker proposing new item
-    proposeChange({
-      kind: 'add',
-      sectionId,
-      itemName: name,
-      after: itemData,
-      reason,
+    await proposeChange({
+      kind: 'add', sectionId, itemName: name, after: itemData, reason,
       summary: `Agregar "${name}" en ${targetSection.icon} ${targetSection.name}`
     });
-    scheduleSave();
     closeItemModal();
-    render();
     toast('📋 Nuevo item propuesto, esperando aprobación');
   }
 }
 
-function deleteCurrentItem() {
+async function deleteCurrentItem() {
   if (!state.currentItemId || !state.currentSectionId) return;
   const s = state.sections.find(x => x.id === state.currentSectionId);
   if (!s) return;
   const item = s.items.find(i => i.id === state.currentItemId);
   if (!item) return;
 
-  // ===== ADMIN: delete directly =====
   if (isAdmin()) {
     if (!confirm(`¿Eliminar "${item.name}"?`)) return;
-    s.items = s.items.filter(i => i.id !== state.currentItemId);
-    // Also clean up any pending changes for this item
-    state.pendingChanges = (state.pendingChanges || []).filter(c => c.itemId !== state.currentItemId);
-    logChange('remove', `Eliminó "${item.name}" de ${s.icon} ${s.name}`, { itemId: state.currentItemId, before: item });
-    render();
-    scheduleSave();
+    await deleteItemDoc(state.currentItemId);
+    // Clean up any pending for this item
+    (state.pendingChanges || []).filter(c => c.itemId === state.currentItemId).forEach(c => deletePendingDoc(c.id));
+    await logChange('remove', `Eliminó "${item.name}" de ${s.icon} ${s.name}`, { itemId: state.currentItemId, before: item });
     closeItemModal();
     toast('Item eliminado');
     return;
   }
 
-  // ===== MEMBER: propose delete =====
   const reasonEl = document.getElementById('im-reason');
   const reason = reasonEl ? reasonEl.value.trim() : '';
   if (!confirm(`¿Proponer eliminar "${item.name}"?\n\nEl admin tendrá que aprobarlo antes de borrarse.`)) return;
-
-  proposeChange({
-    kind: 'remove',
-    sectionId: state.currentSectionId,
-    itemId: state.currentItemId,
-    itemName: item.name,
+  await proposeChange({
+    kind: 'remove', sectionId: state.currentSectionId,
+    itemId: state.currentItemId, itemName: item.name,
     before: { name: item.name, qty: item.qty, status: item.status, lastPurchase: item.lastPurchase, notes: item.notes },
-    reason,
-    summary: `Eliminar "${item.name}"`
+    reason, summary: `Eliminar "${item.name}"`
   });
-  scheduleSave();
   closeItemModal();
-  render();
   toast('📋 Eliminación propuesta, esperando aprobación');
 }
 
 // ============================================================
 // APPROVAL FLOW (admin only)
 // ============================================================
-function approveChange(changeId) {
+async function approveChange(changeId) {
   if (!isAdmin()) return;
   const change = (state.pendingChanges || []).find(c => c.id === changeId);
   if (!change) return;
-
   if (change.kind === 'add') {
     const targetSection = state.sections.find(s => s.id === change.sectionId);
     if (!targetSection) { toast('Sección no encontrada'); return; }
-    targetSection.items.push({ id: uid(), checked: false, ...change.after });
-    logChange('approve', `Aprobó agregar "${change.itemName}" (propuesto por ${change.proposedBy})`, change);
+    const newId = uid();
+    const order = targetSection.items.length;
+    await saveItemDoc({ id: newId, sectionId: change.sectionId, checked: false, order, ...change.after });
+    await logChange('approve', `Aprobó agregar "${change.itemName}" (propuesto por ${change.proposedBy})`, change);
   } else if (change.kind === 'edit') {
-    const currentSection = state.sections.find(s => s.id === change.originalSectionId);
-    const targetSection = state.sections.find(s => s.id === change.sectionId);
-    const item = currentSection?.items.find(i => i.id === change.itemId);
-    if (!item) { toast('Item no encontrado'); return; }
-    Object.assign(item, change.after);
-    if (change.originalSectionId !== change.sectionId && targetSection) {
-      currentSection.items = currentSection.items.filter(i => i.id !== change.itemId);
-      targetSection.items.push(item);
-    }
-    logChange('approve', `Aprobó editar "${change.itemName}" (propuesto por ${change.proposedBy})`, change);
+    await saveItemDoc({ id: change.itemId, sectionId: change.sectionId, ...change.after });
+    await logChange('approve', `Aprobó editar "${change.itemName}" (propuesto por ${change.proposedBy})`, change);
   } else if (change.kind === 'remove') {
-    const s = state.sections.find(x => x.id === change.sectionId);
-    if (!s) { toast('Sección no encontrada'); return; }
-    s.items = s.items.filter(i => i.id !== change.itemId);
-    logChange('approve', `Aprobó eliminar "${change.itemName}" (propuesto por ${change.proposedBy})`, change);
+    await deleteItemDoc(change.itemId);
+    await logChange('approve', `Aprobó eliminar "${change.itemName}" (propuesto por ${change.proposedBy})`, change);
   }
-
-  state.pendingChanges = state.pendingChanges.filter(c => c.id !== changeId);
-  render();
-  scheduleSave();
+  await deletePendingDoc(changeId);
   toast('✓ Cambio aprobado');
 }
 
-function rejectChange(changeId) {
+async function rejectChange(changeId) {
   if (!isAdmin()) return;
   const change = (state.pendingChanges || []).find(c => c.id === changeId);
   if (!change) return;
   const reason = prompt('¿Razón de rechazo? (opcional)', '');
-  if (reason === null) return;  // cancelled
-  state.pendingChanges = state.pendingChanges.filter(c => c.id !== changeId);
-  logChange('reject', `Rechazó ${change.summary || change.kind} (propuesto por ${change.proposedBy})${reason ? ': ' + reason : ''}`, { ...change, rejectReason: reason });
-  render();
-  scheduleSave();
+  if (reason === null) return;
+  await deletePendingDoc(changeId);
+  await logChange('reject', `Rechazó ${change.summary || change.kind} (propuesto por ${change.proposedBy})${reason ? ': ' + reason : ''}`, { ...change, rejectReason: reason });
   toast('Cambio rechazado');
 }
 
-// Worker can cancel their own pending proposal
-function cancelOwnProposal(changeId) {
+async function cancelOwnProposal(changeId) {
   const change = (state.pendingChanges || []).find(c => c.id === changeId);
   if (!change) return;
   if (change.proposedBy !== (window.currentUserName || 'Worker') && !isAdmin()) {
@@ -1646,10 +1494,8 @@ function cancelOwnProposal(changeId) {
     return;
   }
   if (!confirm(`¿Cancelar tu propuesta: ${change.summary}?`)) return;
-  state.pendingChanges = state.pendingChanges.filter(c => c.id !== changeId);
-  logChange('cancel', `Canceló su propuesta: ${change.summary}`, change);
-  render();
-  scheduleSave();
+  await deletePendingDoc(changeId);
+  await logChange('cancel', `Canceló su propuesta: ${change.summary}`, change);
   toast('Propuesta cancelada');
 }
 
@@ -1657,7 +1503,6 @@ function openPendingChangesModal() {
   document.getElementById('pending-changes-modal').classList.add('open');
   renderPendingChangesList();
 }
-
 function closePendingChangesModal() {
   document.getElementById('pending-changes-modal').classList.remove('open');
 }
@@ -1678,8 +1523,6 @@ function renderPendingChangesList() {
     const ts = new Date(c.proposedAt);
     const tsStr = ts.toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
     const section = c.sectionId ? state.sections.find(s => s.id === c.sectionId) : null;
-
-    // Build diff description
     let diffHtml = '';
     if (c.kind === 'edit' && c.before && c.after) {
       const diffs = [];
@@ -1696,7 +1539,6 @@ function renderPendingChangesList() {
     } else if (c.kind === 'remove' && c.before) {
       diffHtml = `<div style="font-size:11px; color:#EF4444; margin-top:3px; font-family:monospace;">name: ${escapeHTML(c.before.name)} · qty: ${escapeHTML(c.before.qty || '—')}</div>`;
     }
-
     return `
       <div style="background:#0A0A0A; border:1px solid ${kindColor}55; border-left:3px solid ${kindColor}; border-radius:8px; padding:12px; margin-bottom:10px;">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
@@ -1729,11 +1571,9 @@ function openChangeLogModal() {
   document.getElementById('change-log-modal').classList.add('open');
   renderChangeLogList();
 }
-
 function closeChangeLogModal() {
   document.getElementById('change-log-modal').classList.remove('open');
 }
-
 function renderChangeLogList() {
   const container = document.getElementById('change-log-list');
   if (!container) return;
@@ -1789,30 +1629,22 @@ function closeSectionModal() {
   document.getElementById('section-modal').classList.remove('open');
 }
 
-function saveSection() {
+async function saveSection() {
   const name = document.getElementById('sm-name').value.trim();
   if (!name) { toast('Falta nombre'); return; }
   const icon = document.getElementById('sm-icon').value.trim() || '📦';
-
   if (state.currentSectionId) {
-    const s = state.sections.find(x => x.id === state.currentSectionId);
-    if (s) { s.name = name; s.icon = icon; }
+    await saveSectionDoc({ id: state.currentSectionId, name, icon });
   } else {
-    state.sections.push({
-      id: uid(),
-      name,
-      icon,
-      collapsed: false,
-      items: []
-    });
+    const newId = uid();
+    const order = state.sections.length;
+    await saveSectionDoc({ id: newId, name, icon, order, collapsed: false });
   }
-  render();
-  scheduleSave();
   closeSectionModal();
   toast('Sección guardada ✓');
 }
 
-function deleteCurrentSection() {
+async function deleteCurrentSection() {
   if (!state.currentSectionId) return;
   const s = state.sections.find(x => x.id === state.currentSectionId);
   if (!s) return;
@@ -1821,9 +1653,7 @@ function deleteCurrentSection() {
   } else {
     if (!confirm('¿Eliminar sección?')) return;
   }
-  state.sections = state.sections.filter(x => x.id !== state.currentSectionId);
-  render();
-  scheduleSave();
+  await deleteSectionDoc(state.currentSectionId);
   closeSectionModal();
   toast('Sección eliminada');
 }
@@ -1831,12 +1661,21 @@ function deleteCurrentSection() {
 // ============================================================
 // RESET
 // ============================================================
-function resetChecklist() {
+async function resetChecklist() {
   if (!confirm('¿Desmarcar TODOS los checkboxes? Las cantidades, estados y notas se mantienen.')) return;
-  state.sections.forEach(s => s.items.forEach(i => { i.checked = false; }));
-  render();
-  scheduleSave();
-  toast('Checklist reseteado ✓');
+  const batch = window.firebaseWriteBatch(window.firebaseDb);
+  state.sections.forEach(s => s.items.forEach(i => {
+    batch.update(itemDoc(i.id), { checked: false });
+  }));
+  try {
+    setSyncStatus('syncing', 'Reseteando...');
+    await batch.commit();
+    setSyncStatus('', 'Sincronizado');
+    toast('Checklist reseteado ✓');
+  } catch (e) {
+    console.error('[Pista] Reset failed:', e);
+    setSyncStatus('error', 'Error sync');
+  }
 }
 
 // ============================================================
@@ -1845,36 +1684,24 @@ function resetChecklist() {
 function generateReport() {
   const now = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
   let report = `🏁 LapKr · Checklist Pista\n📅 ${now}\n`;
-
   if (state.trackInfo.next) report += `🎯 Próxima: ${state.trackInfo.next}\n`;
-
   let total = 0, checked = 0;
   state.sections.forEach(s => s.items.forEach(i => { total++; if (i.checked) checked++; }));
   report += `\n📦 ${checked}/${total} items cargados\n`;
-
   const pending = [];
   const issues = [];
   state.sections.forEach(s => {
     s.items.forEach(i => {
-      if (!i.checked) {
-        pending.push(`- ${i.name}${i.qty ? ' (' + i.qty + ')' : ''} [${s.name}]`);
-      }
+      if (!i.checked) pending.push(`- ${i.name}${i.qty ? ' (' + i.qty + ')' : ''} [${s.name}]`);
       if (i.status === 'falta' || i.status === 'dañado' || i.status === 'agotado') {
         const label = i.status === 'falta' ? '⚠️' : i.status === 'dañado' ? '🔧' : '🚫';
         issues.push(`${label} ${i.name} (${i.status})${i.notes ? ' — ' + i.notes : ''}`);
       }
     });
   });
-
-  if (issues.length > 0) {
-    report += `\n⚠️ PROBLEMAS:\n${issues.join('\n')}\n`;
-  }
-  if (pending.length > 0 && pending.length <= 20) {
-    report += `\n📋 PENDIENTES POR CARGAR:\n${pending.join('\n')}\n`;
-  } else if (pending.length > 20) {
-    report += `\n📋 PENDIENTES POR CARGAR: ${pending.length} items (ver app)\n`;
-  }
-
+  if (issues.length > 0) report += `\n⚠️ PROBLEMAS:\n${issues.join('\n')}\n`;
+  if (pending.length > 0 && pending.length <= 20) report += `\n📋 PENDIENTES POR CARGAR:\n${pending.join('\n')}\n`;
+  else if (pending.length > 20) report += `\n📋 PENDIENTES POR CARGAR: ${pending.length} items (ver app)\n`;
   return report;
 }
 
@@ -1882,11 +1709,9 @@ function openReportModal() {
   document.getElementById('report-text').textContent = generateReport();
   document.getElementById('report-modal').classList.add('open');
 }
-
 function closeReportModal() {
   document.getElementById('report-modal').classList.remove('open');
 }
-
 function copyReport() {
   const text = document.getElementById('report-text').textContent;
   navigator.clipboard.writeText(text).then(() => {
@@ -1942,11 +1767,9 @@ function openShoppingModal() {
   }
   document.getElementById('shopping-modal').classList.add('open');
 }
-
 function closeShoppingModal() {
   document.getElementById('shopping-modal').classList.remove('open');
 }
-
 function copyShopping() {
   const items = generateShoppingList();
   if (items.length === 0) { toast('Nada que comprar'); return; }
@@ -1979,11 +1802,9 @@ function openTeamModal() {
   renderTeamList();
   document.getElementById('team-modal').classList.add('open');
 }
-
 function closeTeamModal() {
   document.getElementById('team-modal').classList.remove('open');
 }
-
 function renderTeamList() {
   const container = document.getElementById('team-members-list');
   if (!container) return;
@@ -2003,7 +1824,6 @@ function renderTeamList() {
     </div>
   `).join('');
 }
-
 async function addTeamMember() {
   const email = (document.getElementById('team-new-email').value || '').trim().toLowerCase();
   const name = (document.getElementById('team-new-name').value || '').trim();
@@ -2011,17 +1831,16 @@ async function addTeamMember() {
   if (!name) { toast('Falta nombre'); return; }
   if (email === (window.ADMIN_EMAIL || '').toLowerCase()) { toast('Tú ya eres admin'); return; }
   state.team[email] = { name, addedAt: new Date().toISOString() };
-  await saveToFirestore();
+  await saveWorkspaceDoc({ team: state.team, ownerId: window.workspaceOwnerId });
   document.getElementById('team-new-email').value = '';
   document.getElementById('team-new-name').value = '';
   renderTeamList();
   toast('Miembro agregado ✓');
 }
-
 async function removeTeamMember(email) {
   if (!confirm(`¿Quitar acceso a ${email}?`)) return;
   delete state.team[email];
-  await saveToFirestore();
+  await saveWorkspaceDoc({ team: state.team });
   renderTeamList();
   toast('Miembro removido');
 }
@@ -2035,11 +1854,9 @@ function openTrackListModal() {
   document.getElementById('tracks-modal').classList.add('open');
   setTimeout(() => document.getElementById('track-new-name').focus(), 50);
 }
-
 function closeTrackListModal() {
   document.getElementById('tracks-modal').classList.remove('open');
 }
-
 function renderTracksList() {
   const container = document.getElementById('tracks-list');
   if (!container) return;
@@ -2057,40 +1874,35 @@ function renderTracksList() {
     </div>
   `).join('');
 }
-
-function addTrack() {
+async function addTrack() {
   const input = document.getElementById('track-new-name');
   const name = (input.value || '').trim();
   if (!name) { toast('Falta nombre'); return; }
   state.tracks = state.tracks || [];
   if (state.tracks.includes(name)) { toast('Esa pista ya existe'); return; }
   state.tracks.push(name);
+  await saveWorkspaceDoc({ tracks: state.tracks });
   input.value = '';
   renderTracksList();
   renderTrackInfo();
-  scheduleSave();
   toast('Pista agregada ✓');
   setTimeout(() => input.focus(), 50);
 }
-
-function removeTrack(idx) {
+async function removeTrack(idx) {
   const track = state.tracks[idx];
   if (!confirm(`¿Quitar "${track}" de la lista?`)) return;
   state.tracks.splice(idx, 1);
+  await saveWorkspaceDoc({ tracks: state.tracks });
   renderTracksList();
   renderTrackInfo();
-  scheduleSave();
   toast('Pista removida');
 }
 
 // ============================================================
 // START
 // ============================================================
-if (window.firebaseReady) {
-  initAuthFlow();
-} else {
-  window.addEventListener('firebase-ready', initAuthFlow);
-}
+if (window.firebaseReady) initAuthFlow();
+else window.addEventListener('firebase-ready', initAuthFlow);
 </script>
 
 </body>
