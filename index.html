@@ -313,7 +313,6 @@
 </style>
 </head>
 <body>
-
 <!-- LOGIN OVERLAY -->
 <div id="login-overlay">
   <div class="box">
@@ -380,7 +379,7 @@
   <div class="stats-bar">
     <div class="stat-card"><div class="num good" id="stat-checked">0</div><div class="label">Cargados</div></div>
     <div class="stat-card"><div class="num warn" id="stat-pending">0</div><div class="label">Pendientes</div></div>
-    <div class="stat-card"><div class="num danger" id="stat-issues">0</div><div class="label">Faltan / dañados</div></div>
+    <div class="stat-card"><div class="num danger" id="stat-issues">0</div><div class="label">Bajo mínimo</div></div>
     <div class="stat-card"><div class="num" id="stat-total">0</div><div class="label">Total items</div></div>
   </div>
 
@@ -408,7 +407,7 @@
   <div class="filters">
     <button class="filter-chip active" data-filter="all" onclick="setFilter('all')">Todos</button>
     <button class="filter-chip" data-filter="pending" onclick="setFilter('pending')">Pendientes</button>
-    <button class="filter-chip" data-filter="issues" onclick="setFilter('issues')">Con problema</button>
+    <button class="filter-chip" data-filter="issues" onclick="setFilter('issues')">Bajo mínimo</button>
     <button class="filter-chip" data-filter="checked" onclick="setFilter('checked')">Cargados</button>
   </div>
 
@@ -464,7 +463,11 @@
     <div class="field"><label>Nombre</label><input type="text" id="im-name" placeholder="Ej: Mesa portátil"></div>
     <div class="field"><label>Sección</label><select id="im-section"></select></div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-      <div class="field"><label>Cantidad</label><input type="text" id="im-qty" placeholder="Ej: 2"></div>
+      <div class="field"><label>Cantidad actual</label><input type="number" inputmode="numeric" id="im-currentqty" placeholder="Ej: 6" min="0"></div>
+      <div class="field"><label>Stock mínimo</label><input type="number" inputmode="numeric" id="im-minstock" placeholder="Ej: 4" min="0"></div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div class="field"><label>Etiqueta (texto, opcional)</label><input type="text" id="im-qty" placeholder="Ej: *+10 / juego"></div>
       <div class="field"><label>Estado</label>
         <select id="im-status">
           <option value="ok">✓ ok</option>
@@ -591,24 +594,27 @@
 <script id="seed-data" type="application/json">{"sections":[{"id":"99497648","name":"Mobiliario","icon":"🪑","order":0,"collapsed":false,"items":[{"id":"bfda8b08","name":"Mesa negra","qty":"1","status":"ok","checked":false,"order":0,"lastPurchase":null,"notes":""},{"id":"21e25599","name":"Mesa blanca","qty":"1","status":"ok","checked":false,"order":1,"lastPurchase":null,"notes":""},{"id":"fee73c7a","name":"Base pantalla","qty":"1","status":"ok","checked":false,"order":2,"lastPurchase":null,"notes":""},{"id":"1c9b8e0a","name":"Sillas","qty":"6","status":"ok","checked":false,"order":3,"lastPurchase":null,"notes":""},{"id":"fc0e3b8e","name":"Lonas","qty":"2","status":"ok","checked":false,"order":4,"lastPurchase":null,"notes":""},{"id":"67fcfb27","name":"Lonas con logo","qty":"5","status":"ok","checked":false,"order":5,"lastPurchase":null,"notes":""},{"id":"88ca9aa5","name":"Banners","qty":"2","status":"ok","checked":false,"order":6,"lastPurchase":null,"notes":""},{"id":"8595a60a","name":"Carpas","qty":"2","status":"ok","checked":false,"order":7,"lastPurchase":null,"notes":""},{"id":"18814557","name":"Protector iphone blanco","qty":"","status":"ok","checked":false,"order":8,"lastPurchase":null,"notes":""},{"id":"01efa5b3","name":"Bote de basura","qty":"","status":"ok","checked":false,"order":9,"lastPurchase":null,"notes":""},{"id":"6c1ab4b1","name":"Paraguas","qty":"","status":"ok","checked":false,"order":10,"lastPurchase":null,"notes":""},{"id":"1b759238","name":"Hielera","qty":"","status":"ok","checked":false,"order":11,"lastPurchase":null,"notes":""}]},{"id":"d959e61b","name":"Seguridad","icon":"🛡️","order":1,"collapsed":false,"items":[{"id":"609e5689","name":"Extintores","qty":"2","status":"ok","checked":false,"order":0,"lastPurchase":null,"notes":""},{"id":"ace0cc0a","name":"Botiquín","qty":"1","status":"ok","checked":false,"order":1,"lastPurchase":null,"notes":""},{"id":"50f126e7","name":"Estraps","qty":"6","status":"ok","checked":false,"order":2,"lastPurchase":null,"notes":""},{"id":"785fe577","name":"Pulpo y sinchos","qty":"*+10","status":"ok","checked":false,"order":3,"lastPurchase":null,"notes":""},{"id":"73589537","name":"Contrapesos","qty":"2","status":"ok","checked":false,"order":4,"lastPurchase":null,"notes":""}]}]}
 </script>
 
+
 <script>
 // ============================================================
 // LAPKR PISTA — App (subcollections architecture)
+// CAMBIOS: inventario con stock mínimo + cantidad actual (híbrido)
 // ============================================================
 //
-// FIRESTORE STRUCTURE:
-//   /lapkr-pista/shared                          ← workspace metadata (team, ownerId, trackInfo, tracks)
-//   /lapkr-pista/shared/sections/{sectionId}     ← one doc per section { id, name, icon, order, collapsed }
-//   /lapkr-pista/shared/items/{itemId}           ← one doc per item { id, sectionId, name, qty, status, checked, order, lastPurchase, notes }
-//   /lapkr-pista/shared/pendingChanges/{cId}     ← one doc per pending change
-//   /lapkr-pista/shared/changeLog/{entryId}      ← one doc per log entry
+// FIRESTORE STRUCTURE (sin cambios de ruta):
+//   /lapkr-pista/shared
+//   /lapkr-pista/shared/sections/{sectionId}
+//   /lapkr-pista/shared/items/{itemId}   ← ahora con currentQty (number|null) y minStock (number)
+//   /lapkr-pista/shared/pendingChanges/{cId}
+//   /lapkr-pista/shared/changeLog/{entryId}
 //
-// This means two devices editing different items at the same time never collide.
+// NOTA: NO se re-siembra ni se borra nada. Los campos nuevos se agregan con merge.
+// Items viejos arrancan con currentQty=null y minStock=0 hasta que se editen.
 
 const SEED_DATA = JSON.parse(document.getElementById('seed-data').textContent);
 
 const state = {
-  sections: [],           // [{id,name,icon,order,collapsed,items:[...]}]   (denormalized for render)
+  sections: [],
   trackInfo: { next: '' },
   tracks: ['KBR — Bosque Real', 'KSE — Sierra Esmeralda'],
   filter: 'all',
@@ -619,10 +625,41 @@ const state = {
   changeLog: []
 };
 
-let unsubs = [];           // active onSnapshot unsubscribers
+let unsubs = [];
 let cloudReady = false;
 let suppressLocalUpdate = false;
 window.sessionIdPista = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+
+// ============================================================
+// STOCK HELPERS (nuevo)
+// ============================================================
+// Normaliza un valor a número o null
+function toNumOrNull(v) {
+  if (v === '' || v === null || v === undefined) return null;
+  const n = Number(v);
+  return isNaN(n) ? null : n;
+}
+// Devuelve sugerencia de estado por stock, o null si no aplica.
+// Solo sugiere si hay minStock > 0 y currentQty definida.
+function stockSuggestion(item) {
+  const cur = toNumOrNull(item.currentQty);
+  const min = toNumOrNull(item.minStock) || 0;
+  if (cur === null || min <= 0) return null;
+  if (cur <= 0) return 'agotado';
+  if (cur < min) return 'falta';
+  return 'ok';
+}
+// ¿El item está por debajo del mínimo? (para stats / compras / filtros)
+function isLowStock(item) {
+  const sug = stockSuggestion(item);
+  return sug === 'falta' || sug === 'agotado';
+}
+// ¿Hay una sugerencia que NO coincide con el estado manual? (para badge "aplicar")
+function hasStockMismatch(item) {
+  const sug = stockSuggestion(item);
+  if (!sug) return false;
+  return sug !== (item.status || 'ok');
+}
 
 // ============================================================
 // AUTH FLOW
@@ -654,9 +691,9 @@ function initAuthFlow() {
     }
     const userEmail = (user.email || '').toLowerCase();
     const adminEmail = (window.ADMIN_EMAIL || '').toLowerCase();
-    const isAdmin = userEmail === adminEmail;
+    const isAdminUser = userEmail === adminEmail;
 
-    if (isAdmin) {
+    if (isAdminUser) {
       window.currentUser = user;
       window.currentUserRole = 'admin';
       window.currentUserName = user.displayName || 'Admin';
@@ -706,7 +743,6 @@ async function finishLogin(user) {
   showApp();
   setSyncStatus('syncing', 'Cargando...');
   await subscribeToFirestore();
-  // If still no sections after initial load, seed (admin only)
   if (state.sections.length === 0 && window.currentUserRole === 'admin') {
     console.log('[Pista] Seeding initial data');
     await seedInitialData();
@@ -760,14 +796,12 @@ function logDoc(id) {
   return window.firebaseDoc(window.firebaseDb, 'lapkr-pista', 'shared', 'changeLog', id);
 }
 
-// State buckets coming from snapshots
-let sectionsMap = {};   // { sectionId: sectionDocData }
-let itemsMap = {};      // { itemId: itemDocData }
-let pendingMap = {};    // { changeId: changeDocData }
-let logMap = {};        // { entryId: logDocData }
+let sectionsMap = {};
+let itemsMap = {};
+let pendingMap = {};
+let logMap = {};
 
 function rebuildStateFromMaps() {
-  // Build sections array sorted by order, with their items nested (also sorted)
   const sections = Object.values(sectionsMap).map(s => ({
     id: s.id,
     name: s.name,
@@ -776,7 +810,6 @@ function rebuildStateFromMaps() {
     collapsed: !!s.collapsed,
     items: []
   }));
-  // Bucket items by sectionId
   Object.values(itemsMap).forEach(it => {
     const sec = sections.find(s => s.id === it.sectionId);
     if (!sec) return;
@@ -784,6 +817,8 @@ function rebuildStateFromMaps() {
       id: it.id,
       name: it.name || '',
       qty: it.qty || '',
+      currentQty: (it.currentQty === undefined ? null : it.currentQty),
+      minStock: (it.minStock === undefined || it.minStock === null ? 0 : it.minStock),
       status: it.status || 'ok',
       checked: !!it.checked,
       order: it.order != null ? it.order : 999,
@@ -799,7 +834,6 @@ function rebuildStateFromMaps() {
 }
 
 async function subscribeToFirestore() {
-  // Workspace doc: team + trackInfo + tracks + ownerId
   const wsUnsub = window.firebaseOnSnapshot(workspaceRef(), (snap) => {
     if (snap.exists()) {
       const data = snap.data();
@@ -860,13 +894,11 @@ async function subscribeToFirestore() {
   }, (err) => console.error('[Pista] Log error:', err));
   unsubs.push(lUnsub);
 
-  // Wait briefly for first snapshots
   await new Promise(r => setTimeout(r, 700));
 }
 
 async function seedInitialData() {
   try {
-    // Seed workspace if missing
     const wsSnap = await window.firebaseGetDoc(workspaceRef());
     if (!wsSnap.exists()) {
       await window.firebaseSetDoc(workspaceRef(), {
@@ -877,7 +909,6 @@ async function seedInitialData() {
         createdAt: new Date().toISOString()
       });
     }
-    // Seed sections + items
     const batch = window.firebaseWriteBatch(window.firebaseDb);
     SEED_DATA.sections.forEach((s, sIdx) => {
       batch.set(sectionDoc(s.id), {
@@ -890,6 +921,7 @@ async function seedInitialData() {
           id: it.id,
           sectionId: s.id,
           name: it.name, qty: it.qty || '',
+          currentQty: null, minStock: 0,
           status: it.status || 'ok', checked: !!it.checked,
           order: it.order != null ? it.order : iIdx,
           lastPurchase: it.lastPurchase || null, notes: it.notes || ''
@@ -905,10 +937,9 @@ async function seedInitialData() {
 }
 
 // ============================================================
-// GRANULAR WRITES — these are the per-item / per-section ops
+// GRANULAR WRITES
 // ============================================================
 async function saveItemDoc(itemData) {
-  // itemData must include id and sectionId
   try {
     setSyncStatus('syncing', 'Guardando...');
     await window.firebaseSetDoc(itemDoc(itemData.id), itemData, { merge: true });
@@ -939,7 +970,6 @@ async function saveSectionDoc(secData) {
   }
 }
 async function deleteSectionDoc(secId) {
-  // Also delete all items belonging to this section
   try {
     setSyncStatus('syncing', 'Guardando...');
     const sec = state.sections.find(s => s.id === secId);
@@ -1066,18 +1096,18 @@ function onTrackInfoChange() {
 }
 
 function renderStats() {
-  let total = 0, checked = 0, issues = 0;
+  let total = 0, checked = 0, low = 0;
   state.sections.forEach(s => {
     s.items.forEach(i => {
       total++;
       if (i.checked) checked++;
-      if (!i.checked && (i.status === 'falta' || i.status === 'dañado' || i.status === 'agotado')) issues++;
+      if (isLowStock(i) || (!i.checked && (i.status === 'falta' || i.status === 'dañado' || i.status === 'agotado'))) low++;
     });
   });
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-checked').textContent = checked;
   document.getElementById('stat-pending').textContent = total - checked;
-  document.getElementById('stat-issues').textContent = issues;
+  document.getElementById('stat-issues').textContent = low;
 }
 
 function renderSections() {
@@ -1093,7 +1123,7 @@ function renderSections() {
       if (state.filter === 'all') return true;
       if (state.filter === 'pending') return !item.checked;
       if (state.filter === 'checked') return item.checked;
-      if (state.filter === 'issues') return !item.checked && (item.status === 'falta' || item.status === 'dañado' || item.status === 'agotado');
+      if (state.filter === 'issues') return isLowStock(item) || (!item.checked && (item.status === 'falta' || item.status === 'dañado' || item.status === 'agotado'));
       return true;
     });
     if (state.filter !== 'all' && filteredItems.length === 0) return '';
@@ -1130,28 +1160,50 @@ function renderSections() {
                 <span style="font-size:10px; color:#F59E0B; font-weight:600;">${pending.kind === 'remove' ? 'Eliminación' : 'Edición'} propuesta por ${escapeHTML(pending.proposedBy)}</span>
               </div>
             ` : '';
+            // Badge de bajo stock / sugerencia
+            const low = isLowStock(item);
+            const sug = stockSuggestion(item);
+            const mismatch = hasStockMismatch(item);
+            let stockBadge = '';
+            if (low) {
+              const cur = toNumOrNull(item.currentQty);
+              const min = toNumOrNull(item.minStock) || 0;
+              const sugColor = sug === 'agotado' ? '#8B5CF6' : '#F59E0B';
+              const sugLabel = sug === 'agotado' ? 'AGOTADO' : 'BAJO MÍNIMO';
+              const applyBtn = (mismatch && (isAdmin() )) ? `<button class="btn small" style="padding:2px 8px; font-size:10px; margin-left:auto;" onclick="event.stopPropagation(); applyStockSuggestion('${section.id}','${item.id}')">Aplicar "${sug}"</button>` : '';
+              stockBadge = `
+              <div style="display:flex; align-items:center; gap:6px; padding:4px 8px; background:${sugColor}22; border:1px solid ${sugColor}66; border-radius:6px; margin-top:6px;">
+                <span style="font-size:10px; color:${sugColor}; font-weight:700;">⬇ ${sugLabel}</span>
+                <span style="font-size:10px; color:#94A3B8; font-family:monospace;">${cur} / min ${min}</span>
+                ${applyBtn}
+              </div>`;
+            }
             const reorderItemHTML = state.filter === 'all' ? `
               <div class="reorder-btns" onclick="event.stopPropagation();" title="Reordenar item">
                 <button class="reorder-btn" onclick="event.stopPropagation(); moveItem('${section.id}', '${item.id}', -1)" ${itemFirst ? 'disabled' : ''}>▲</button>
                 <button class="reorder-btn" onclick="event.stopPropagation(); moveItem('${section.id}', '${item.id}', 1)" ${itemLast ? 'disabled' : ''}>▼</button>
               </div>` : '';
+            const minVal = toNumOrNull(item.minStock) || 0;
+            const curVal = (item.currentQty === null || item.currentQty === undefined) ? '' : item.currentQty;
             return `
             <div class="item ${item.checked ? 'checked' : ''}" data-item-id="${item.id}">
               ${reorderItemHTML}
               <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${section.id}', '${item.id}')"></div>
               <div class="item-body" onclick="openEditItemModal('${section.id}', '${item.id}')">
                 <div class="item-name">${escapeHTML(item.name)}</div>
-                ${(item.lastPurchase || item.notes) ? `
-                  <div class="item-meta">
-                    ${item.lastPurchase ? `<span class="badge">🛒 ${fmtDate(item.lastPurchase)}</span>` : ''}
-                    ${item.notes ? `<span style="color:#94A3B8; font-style: italic;">"${escapeHTML(item.notes.substring(0, 50))}${item.notes.length > 50 ? '…' : ''}"</span>` : ''}
-                  </div>
-                ` : ''}
+                <div class="item-meta">
+                  <span class="badge" title="Stock mínimo">min ${minVal}</span>
+                  ${item.qty ? `<span class="badge" title="Etiqueta">${escapeHTML(item.qty)}</span>` : ''}
+                  ${item.lastPurchase ? `<span class="badge">🛒 ${fmtDate(item.lastPurchase)}</span>` : ''}
+                  ${item.notes ? `<span style="color:#94A3B8; font-style: italic;">"${escapeHTML(item.notes.substring(0, 40))}${item.notes.length > 40 ? '…' : ''}"</span>` : ''}
+                </div>
+                ${stockBadge}
                 ${pendingBadge}
               </div>
-              <input class="item-qty" type="text" value="${escapeHTML(item.qty || '')}" placeholder="—"
+              <input class="item-qty" type="number" inputmode="numeric" min="0" value="${escapeHTML(curVal)}" placeholder="—"
+                title="Cantidad actual"
                 onclick="event.stopPropagation();"
-                onchange="updateItemField('${section.id}', '${item.id}', 'qty', this.value)">
+                onchange="updateItemField('${section.id}', '${item.id}', 'currentQty', this.value)">
               <select class="item-status ${item.status}" onclick="event.stopPropagation();"
                 onchange="updateItemField('${section.id}', '${item.id}', 'status', this.value); this.className = 'item-status ' + this.value;">
                 <option value="ok" ${item.status === 'ok' ? 'selected' : ''}>✓ ok</option>
@@ -1171,6 +1223,20 @@ function renderSections() {
   }).join('');
 }
 
+// Aplica la sugerencia de stock al estado manual (híbrido)
+function applyStockSuggestion(sectionId, itemId) {
+  const s = state.sections.find(x => x.id === sectionId);
+  if (!s) return;
+  const item = s.items.find(x => x.id === itemId);
+  if (!item) return;
+  const sug = stockSuggestion(item);
+  if (!sug) return;
+  item.status = sug;
+  render();
+  saveItemDoc({ id: itemId, sectionId, status: sug });
+  toast(`Estado actualizado a "${sug}"`);
+}
+
 // ============================================================
 // REORDER OPERATIONS
 // ============================================================
@@ -1181,7 +1247,6 @@ async function moveSection(sectionId, delta) {
   if (idx < 0) return;
   const newIdx = idx + delta;
   if (newIdx < 0 || newIdx >= sorted.length) return;
-  // Swap and re-number
   [sorted[idx], sorted[newIdx]] = [sorted[newIdx], sorted[idx]];
   const batch = window.firebaseWriteBatch(window.firebaseDb);
   sorted.forEach((s, i) => batch.update(sectionDoc(s.id), { order: i }));
@@ -1250,10 +1315,13 @@ function updateItemField(sectionId, itemId, field, value) {
   if (!s) return;
   const item = s.items.find(x => x.id === itemId);
   if (!item) return;
-  item[field] = value;
+  // currentQty se guarda como número o null
+  let val = value;
+  if (field === 'currentQty') val = toNumOrNull(value);
+  item[field] = val;
   render();
   const patch = { id: itemId, sectionId };
-  patch[field] = value;
+  patch[field] = val;
   saveItemDoc(patch);
 }
 
@@ -1284,6 +1352,8 @@ function openAddItemModal() {
   state.currentItemId = null;
   state.currentSectionId = null;
   document.getElementById('im-name').value = '';
+  document.getElementById('im-currentqty').value = '';
+  document.getElementById('im-minstock').value = '';
   document.getElementById('im-qty').value = '';
   document.getElementById('im-status').value = 'ok';
   document.getElementById('im-lastpurchase').value = '';
@@ -1308,6 +1378,8 @@ function openEditItemModal(sectionId, itemId) {
   state.currentItemId = itemId;
   state.currentSectionId = sectionId;
   document.getElementById('im-name').value = item.name;
+  document.getElementById('im-currentqty').value = (item.currentQty === null || item.currentQty === undefined) ? '' : item.currentQty;
+  document.getElementById('im-minstock').value = (item.minStock === null || item.minStock === undefined) ? '' : item.minStock;
   document.getElementById('im-qty').value = item.qty || '';
   document.getElementById('im-status').value = item.status || 'ok';
   document.getElementById('im-lastpurchase').value = item.lastPurchase || '';
@@ -1344,7 +1416,6 @@ function getPendingForItem(itemId) {
 }
 
 async function proposeChange(change) {
-  // Replace any existing proposal for same item
   if (change.itemId) {
     const existing = (state.pendingChanges || []).filter(c => c.itemId === change.itemId);
     for (const ex of existing) await deletePendingDoc(ex.id);
@@ -1369,6 +1440,8 @@ async function saveItem() {
   const reason = reasonEl ? reasonEl.value.trim() : '';
   const itemData = {
     name,
+    currentQty: toNumOrNull(document.getElementById('im-currentqty').value),
+    minStock: toNumOrNull(document.getElementById('im-minstock').value) || 0,
     qty: document.getElementById('im-qty').value.trim(),
     status: document.getElementById('im-status').value,
     lastPurchase: document.getElementById('im-lastpurchase').value || null,
@@ -1395,7 +1468,6 @@ async function saveItem() {
     return;
   }
 
-  // Worker: propose
   if (state.currentItemId) {
     const currentSection = state.sections.find(s => s.id === state.currentSectionId);
     const item = currentSection?.items.find(i => i.id === state.currentItemId);
@@ -1403,7 +1475,7 @@ async function saveItem() {
     await proposeChange({
       kind: 'edit', sectionId, originalSectionId: state.currentSectionId,
       itemId: state.currentItemId, itemName: item.name,
-      before: { name: item.name, qty: item.qty, status: item.status, lastPurchase: item.lastPurchase, notes: item.notes },
+      before: { name: item.name, qty: item.qty, currentQty: item.currentQty, minStock: item.minStock, status: item.status, lastPurchase: item.lastPurchase, notes: item.notes },
       after: itemData, reason,
       summary: `Editar "${item.name}"`
     });
@@ -1429,7 +1501,6 @@ async function deleteCurrentItem() {
   if (isAdmin()) {
     if (!confirm(`¿Eliminar "${item.name}"?`)) return;
     await deleteItemDoc(state.currentItemId);
-    // Clean up any pending for this item
     (state.pendingChanges || []).filter(c => c.itemId === state.currentItemId).forEach(c => deletePendingDoc(c.id));
     await logChange('remove', `Eliminó "${item.name}" de ${s.icon} ${s.name}`, { itemId: state.currentItemId, before: item });
     closeItemModal();
@@ -1443,7 +1514,7 @@ async function deleteCurrentItem() {
   await proposeChange({
     kind: 'remove', sectionId: state.currentSectionId,
     itemId: state.currentItemId, itemName: item.name,
-    before: { name: item.name, qty: item.qty, status: item.status, lastPurchase: item.lastPurchase, notes: item.notes },
+    before: { name: item.name, qty: item.qty, currentQty: item.currentQty, minStock: item.minStock, status: item.status, lastPurchase: item.lastPurchase, notes: item.notes },
     reason, summary: `Eliminar "${item.name}"`
   });
   closeItemModal();
@@ -1526,18 +1597,18 @@ function renderPendingChangesList() {
     let diffHtml = '';
     if (c.kind === 'edit' && c.before && c.after) {
       const diffs = [];
-      ['name', 'qty', 'status', 'lastPurchase', 'notes'].forEach(field => {
-        const before = c.before[field] || '';
-        const after = c.after[field] || '';
+      ['name', 'currentQty', 'minStock', 'qty', 'status', 'lastPurchase', 'notes'].forEach(field => {
+        const before = c.before[field] === null || c.before[field] === undefined ? '' : c.before[field];
+        const after = c.after[field] === null || c.after[field] === undefined ? '' : c.after[field];
         if (String(before) !== String(after)) {
           diffs.push(`<div style="font-size:11px; color:#94A3B8; margin-top:3px; font-family:monospace;"><span style="color:#EF4444;">${field}:</span> "${escapeHTML(String(before))}" → <span style="color:#10B981;">"${escapeHTML(String(after))}"</span></div>`);
         }
       });
       diffHtml = diffs.join('');
     } else if (c.kind === 'add' && c.after) {
-      diffHtml = `<div style="font-size:11px; color:#10B981; margin-top:3px; font-family:monospace;">name: ${escapeHTML(c.after.name)} · qty: ${escapeHTML(c.after.qty || '—')} · status: ${escapeHTML(c.after.status || 'ok')}</div>`;
+      diffHtml = `<div style="font-size:11px; color:#10B981; margin-top:3px; font-family:monospace;">name: ${escapeHTML(c.after.name)} · actual: ${escapeHTML(c.after.currentQty === null ? '—' : c.after.currentQty)} · min: ${escapeHTML(c.after.minStock || 0)}</div>`;
     } else if (c.kind === 'remove' && c.before) {
-      diffHtml = `<div style="font-size:11px; color:#EF4444; margin-top:3px; font-family:monospace;">name: ${escapeHTML(c.before.name)} · qty: ${escapeHTML(c.before.qty || '—')}</div>`;
+      diffHtml = `<div style="font-size:11px; color:#EF4444; margin-top:3px; font-family:monospace;">name: ${escapeHTML(c.before.name)} · actual: ${escapeHTML(c.before.currentQty === null ? '—' : c.before.currentQty)}</div>`;
     }
     return `
       <div style="background:#0A0A0A; border:1px solid ${kindColor}55; border-left:3px solid ${kindColor}; border-radius:8px; padding:12px; margin-bottom:10px;">
@@ -1662,7 +1733,7 @@ async function deleteCurrentSection() {
 // RESET
 // ============================================================
 async function resetChecklist() {
-  if (!confirm('¿Desmarcar TODOS los checkboxes? Las cantidades, estados y notas se mantienen.')) return;
+  if (!confirm('¿Desmarcar TODOS los checkboxes? Las cantidades, mínimos, estados y notas se mantienen.')) return;
   const batch = window.firebaseWriteBatch(window.firebaseDb);
   state.sections.forEach(s => s.items.forEach(i => {
     batch.update(itemDoc(i.id), { checked: false });
@@ -1692,14 +1763,20 @@ function generateReport() {
   const issues = [];
   state.sections.forEach(s => {
     s.items.forEach(i => {
-      if (!i.checked) pending.push(`- ${i.name}${i.qty ? ' (' + i.qty + ')' : ''} [${s.name}]`);
-      if (i.status === 'falta' || i.status === 'dañado' || i.status === 'agotado') {
-        const label = i.status === 'falta' ? '⚠️' : i.status === 'dañado' ? '🔧' : '🚫';
-        issues.push(`${label} ${i.name} (${i.status})${i.notes ? ' — ' + i.notes : ''}`);
+      if (!i.checked) pending.push(`- ${i.name}${i.currentQty != null ? ' (' + i.currentQty + ')' : ''} [${s.name}]`);
+      const low = isLowStock(i);
+      if (low || i.status === 'falta' || i.status === 'dañado' || i.status === 'agotado') {
+        const cur = toNumOrNull(i.currentQty);
+        const min = toNumOrNull(i.minStock) || 0;
+        let label = '⚠️';
+        let stTxt = i.status;
+        if (low && (cur != null)) { label = (i.status === 'dañado' ? '🔧' : '⬇'); stTxt = `actual ${cur} / min ${min}`; }
+        else { label = i.status === 'falta' ? '⚠️' : i.status === 'dañado' ? '🔧' : '🚫'; }
+        issues.push(`${label} ${i.name} (${stTxt})${i.notes ? ' — ' + i.notes : ''}`);
       }
     });
   });
-  if (issues.length > 0) report += `\n⚠️ PROBLEMAS:\n${issues.join('\n')}\n`;
+  if (issues.length > 0) report += `\n⚠️ PROBLEMAS / BAJO MÍNIMO:\n${issues.join('\n')}\n`;
   if (pending.length > 0 && pending.length <= 20) report += `\n📋 PENDIENTES POR CARGAR:\n${pending.join('\n')}\n`;
   else if (pending.length > 20) report += `\n📋 PENDIENTES POR CARGAR: ${pending.length} items (ver app)\n`;
   return report;
@@ -1727,8 +1804,11 @@ function generateShoppingList() {
   const items = [];
   state.sections.forEach(s => {
     s.items.forEach(i => {
-      if (i.status === 'falta' || i.status === 'agotado') {
-        items.push({ ...i, section: s.name, sectionIcon: s.icon });
+      if (isLowStock(i) || i.status === 'falta' || i.status === 'agotado') {
+        const cur = toNumOrNull(i.currentQty);
+        const min = toNumOrNull(i.minStock) || 0;
+        const need = (cur != null && min > 0) ? Math.max(0, min - cur) : null;
+        items.push({ ...i, section: s.name, sectionIcon: s.icon, need });
       }
     });
   });
@@ -1739,7 +1819,7 @@ function openShoppingModal() {
   const items = generateShoppingList();
   const container = document.getElementById('shopping-content');
   if (items.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="emoji">🎉</div>No hay nada pendiente de comprar</div>';
+    container.innerHTML = '<div class="empty-state"><div class="emoji">🎉</div>No hay nada bajo mínimo ni pendiente de comprar</div>';
   } else {
     const grouped = {};
     items.forEach(i => {
@@ -1748,7 +1828,7 @@ function openShoppingModal() {
     });
     container.innerHTML = `
       <div style="background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 6px; padding: 10px 12px; margin-bottom: 14px; font-size: 12px; color: #94A3B8;">
-        🛒 <strong style="color:#F59E0B">${items.length} items</strong> con estado "falta" o "agotado"
+        🛒 <strong style="color:#F59E0B">${items.length} items</strong> bajo mínimo o marcados "falta"/"agotado"
       </div>
       ${Object.keys(grouped).map(sectionName => `
         <div style="margin-bottom: 16px;">
@@ -1757,7 +1837,7 @@ function openShoppingModal() {
           </div>
           ${grouped[sectionName].items.map(i => `
             <div style="background: #0A0A0A; border: 1px solid #1E293B; border-radius: 6px; padding: 10px 12px; margin-bottom: 6px;">
-              <div style="font-size: 13px; color: #E5E7EB; font-weight: 500;">${escapeHTML(i.name)} ${i.qty ? `<span style="color:#94A3B8; font-family:monospace;">×${escapeHTML(i.qty)}</span>` : ''}</div>
+              <div style="font-size: 13px; color: #E5E7EB; font-weight: 500;">${escapeHTML(i.name)} ${i.need != null && i.need > 0 ? `<span style="color:#F59E0B; font-family:monospace;">faltan ${i.need}</span>` : (i.currentQty != null ? `<span style="color:#94A3B8; font-family:monospace;">actual ${i.currentQty} / min ${toNumOrNull(i.minStock)||0}</span>` : '')}</div>
               ${i.notes ? `<div style="font-size: 11px; color: #6B7280; margin-top: 3px;">${escapeHTML(i.notes)}</div>` : ''}
             </div>
           `).join('')}
@@ -1782,7 +1862,8 @@ function copyShopping() {
   Object.keys(grouped).forEach(sec => {
     text += `${sec}:\n`;
     grouped[sec].forEach(i => {
-      text += `- ${i.name}${i.qty ? ' (' + i.qty + ')' : ''}${i.notes ? ' — ' + i.notes : ''}\n`;
+      const qtyTxt = i.need != null && i.need > 0 ? ` (faltan ${i.need})` : (i.currentQty != null ? ` (actual ${i.currentQty}/min ${toNumOrNull(i.minStock)||0})` : '');
+      text += `- ${i.name}${qtyTxt}${i.notes ? ' — ' + i.notes : ''}\n`;
     });
     text += '\n';
   });
@@ -1904,6 +1985,7 @@ async function removeTrack(idx) {
 if (window.firebaseReady) initAuthFlow();
 else window.addEventListener('firebase-ready', initAuthFlow);
 </script>
+
 
 </body>
 </html>
